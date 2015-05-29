@@ -1,0 +1,9 @@
+extends layout
+
+block content
+  h1= title
+  p Create a new response for exam #{exam_id}
+  
+  form(action="/exams/#{exam_id}/responses", method="post", enctype="multipart/form-data")
+    input(type="file", name="question")
+    button(type="submit")

@@ -1,0 +1,9 @@
+extends layout
+
+block content
+  h1= title
+  p Create a new exam
+  
+  form(action="/exams", method="post", enctype="multipart/form-data")
+    input(type="text", name="name")
+    button(type="submit")
