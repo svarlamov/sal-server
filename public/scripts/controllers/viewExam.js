@@ -2,22 +2,24 @@
 
 /**
  * @ngdoc function
- * @name yapp.controller:ListExamCtrl
+ * @name yapp.controller:ViewExamCtrl
  * @description
  * # NewExamCtrl
- * Controller to list exams
+ * Controller to view a singular exam, it's questions, and it's responses
  */
-
 angular.module('yapp')
-  .controller('ListExamCtrl', function($rootScope, $scope, $state, $cookieStore, $http, $location) {
-    $scope.submit = function() { $scope.init(); }
-    $scope.init = function() {
+  .controller('ViewExamCtrl', function($rootScope, $scope, $state, $cookieStore, $http, $location) {
+    $scope.loadExam = function() {
+        if(!$rootScope.examIdToLoad) {
+            $location.path('/dashboard');
+            return false;
+        }
         $http({
-            url: 'http://localhost:3000/api/v1/exams?session=' + $cookieStore.get('session'),
+            url: 'http://localhost:3000/api/v1/exams/' + $rootScope.examIdToLoad + '?session=' + $cookieStore.get('session'),
             method: "GET",
             headers: {'Content-Type': 'application/json'}
         }).success(function (data, status, headers, config) {
-            $scope.exams = data;
+            $scope.exam = data;
         }).error(function (data, status, headers, config) {
             if(status == 401) {
                 $scope.authSuccess = false;
@@ -25,11 +27,6 @@ angular.module('yapp')
                 $location.path('/login');
             }
         });
-        return false;
-    }
-    $scope.goToExam = function(exam) {
-        $rootScope.examIdToLoad = exam._id;
-        $location.path('/dashboard/exams.view')
         return false;
     }
   });

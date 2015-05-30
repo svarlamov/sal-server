@@ -4,7 +4,18 @@
 	<div class="jumbotron">
 		<div class="container" data-ng-init="init()">
             <ul class="list-group">
-                <li ng-repeat="exam in exams" class="list-group-item">{{exam}}</li>
+                <li ng-repeat="exam in exams" class="list-group-item">
+                    <div class="container">
+			         <form role="form">
+				        <div class="form-content">
+					       <div class="form-group">
+                            {{exam.name}}<input type="hidden" ng-model="exam._id" id="" value={{exam._id}}>
+					       </div>
+				        </div>
+				        <button type="submit" ng-click="goToExam(exam)" class="pull-left btn btn-primary btn-outline btn-rounded">View</button>
+			         </form>
+		          </div>
+                </li>
             </ul>
 		</div>
 	</div>

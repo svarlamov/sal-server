@@ -60,5 +60,11 @@ angular
             parent: 'dashboard',
             templateUrl: 'views/dashboard/exams.take.html',
             controller: 'TakeExamCtrl'
+          })
+          .state('view_exam', {
+            url: '/exams.view',
+            parent: 'dashboard',
+            templateUrl: 'views/dashboard/exams.view.html',
+            controller: 'ViewExamCtrl'
           });
   });
