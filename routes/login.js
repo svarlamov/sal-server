@@ -7,16 +7,19 @@ var Session = require('../models/session');
 router.post('/', function(req, res, next) {
     var email = req.body.email;
     var password = req.body.password;
-    console.log("before query");
+    if(req.currentUser) {
+        res.setHeader('Content-Type', 'application/json');
+        var authObj = { auth: true, session: req.sessionId };
+        res.send(JSON.stringify(authObj));
+        return;
+    }
     User.findOne({ email: email }, 'email auth_provider', function(err, user) {
-        console.log("First line of user find callback");
         if (err) {
             console.log("error");
             console.error(err);
             res.send(err);
         } else {
             if(!user) {
-                console.log("This is a new user");
                 // Create a new user
                 // TODO: Do dynamic authprovider selection
                 var newUser = new User({ email: email, auth_provider: 'cranbrook'});
@@ -40,7 +43,6 @@ router.post('/', function(req, res, next) {
                     }
                 });
             } else {
-                console.log("This user already exists");
                 //log in an existing user
                 user.authenticate(email, password, function(err, session){
                     if (err) {

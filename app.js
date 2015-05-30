@@ -7,6 +7,8 @@ var bodyParser = require('body-parser');
 var busboy = require('connect-busboy');
 var mongoose = require('mongoose');
 var lessMiddleware = require('less-middleware');
+var User = require('./models/user');
+var Session = require('./models/session');
 
 var routes = require('./routes/index');
 var exams = require('./routes/exams');
@@ -35,6 +37,35 @@ app.use(cookieParser());
 app.use(lessMiddleware(__dirname + '/public'));
 app.use(express.static(path.join(__dirname, 'public')));
 app.use('/bower_components', express.static(path.join(__dirname, 'bower_components')));
+// If a session was supplied, set the current user
+app.use('/api', function(req, res, next) {
+    if(req.body.session){
+        Session.findById(req.body.session, function(err, ses) {
+            if (err) {
+                console.error(err);
+                res.send(err);
+            } else {
+                // If we found a session
+                if(ses) {
+                    User.findById(ses.user, function(err, user) {
+                        if (err) {
+                            console.error(err);
+                            res.send(err);
+                        } else {
+                            req['currentUser'] = user;
+                            req['sessionId'] = ses._id;
+                            console.log("The current user is " + req.currentUser.email);
+                            next();
+                        }
+                    });
+                } else {
+                    req['currentUser'] = null;
+                    next();
+                }
+            }
+        });
+    }
+});
 
 // Index
 app.use('/', routes);

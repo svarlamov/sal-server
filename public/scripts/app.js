@@ -46,6 +46,11 @@ angular
             url: '/reports',
             parent: 'dashboard',
             templateUrl: 'views/dashboard/reports.html'
+          })
+          .state('create_exam', {
+            url: 'exam.create',
+            parent: 'dashboard',
+            templateUrl: 'views/dashboard/exam.create.html',
+            controller: 'NewExamCtrl'
           });
-
   });

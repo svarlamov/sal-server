@@ -4,6 +4,7 @@ var Schema = mongoose.Schema;
 var responseSchema = new Schema({
   name: { type: String, required: true },
   email: { type: String, required: true },
+  user: { type: mongoose.Schema.ObjectId, ref: 'User' },
   answers: [{ type: mongoose.Schema.ObjectId, ref: 'Answer' }],
   created_at: Date,
   updated_at: Date

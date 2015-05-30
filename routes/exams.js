@@ -4,7 +4,17 @@ var Exam = require('../models/exam');
 
 /* POST creates a new exam */
 router.post('/', function(req, res, next) {
-    var exam = new Exam();
+    if(req.currentUser == null) {
+        res.status(401);
+        res.send("You must login to create an exam");
+        return;
+    }
+    if(!req.body.name) {
+        res.status(400);
+        res.send("Your request must contain a name in the body");
+        return;
+    }
+    var exam = new Exam({ user: req.currentUser._id, name: req.body.name });
     exam.save(function(err) {
         if(err) {
             console.error(err);

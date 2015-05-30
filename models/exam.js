@@ -4,6 +4,7 @@ var Schema = mongoose.Schema;
 var examSchema = new Schema({
     name: String,
     password: String,
+    user: { type: mongoose.Schema.ObjectId, ref: 'User' },
     questions: [{ type: mongoose.Schema.ObjectId, ref: 'Question' }],
     responses: [{ type: mongoose.Schema.ObjectId, ref: 'Response' }],
     created_at: Date,
