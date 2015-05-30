@@ -24,12 +24,6 @@ router.post('/', function(req, res, next) {
     });
 });
 
-/* GET creation view question for the exam */
-router.get('/create', function(req, res, next) {
-    //var examId = req.params.exam_id;
-    res.render('create_question', { exam_id: req.params.exam_id });
-});
-
 /* GET question for the exam */
 router.get('/:question_id', function(req, res, next) {
     var questionId = req.params.question_id;

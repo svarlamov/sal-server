@@ -29,10 +29,6 @@ router.get('/', function(req, res, next) {
     })
 });
 
-router.get('/respond', function(req, res, next){
-    res.render('create_response', { exam_id : req.params.exam_id });
-});
-
 /* POST create a new response */
 router.post('/', function(req, res, next) {
     Exam.findById(req.params.exam_id, function(err, exam) {

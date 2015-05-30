@@ -6,14 +6,19 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var busboy = require('connect-busboy');
 var mongoose = require('mongoose');
+var lessMiddleware = require('less-middleware');
 
 var routes = require('./routes/index');
 var exams = require('./routes/exams');
 var responses = require('./routes/responses');
 var questions = require('./routes/questions');
 var answers = require('./routes/answers');
+var loginCtrlr = require('./routes/login')
 
 var app = express();
+mongoose.connection.on('error', function(err) {
+    console.error('MongoDB error: %s', err);
+});
 mongoose.connect('mongodb://localhost/sal_development');
 
 // view engine setup
@@ -21,24 +26,28 @@ app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
 
 // uncomment after placing your favicon in /public
-//app.use(favicon(__dirname + '/public/favicon.ico'));
+app.use(favicon(__dirname + '/public/favicon.ico'));
 app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(busboy());
 app.use(cookieParser());
+app.use(lessMiddleware(__dirname + '/public'));
 app.use(express.static(path.join(__dirname, 'public')));
+app.use('/bower_components', express.static(path.join(__dirname, 'bower_components')));
 
 // Index
 app.use('/', routes);
+// API Login
+app.use('/api/v1/login', loginCtrlr);
 // Exams
-app.use('/exams', exams);
+app.use('/api/v1/exams', exams);
 // Questions
-app.use('/exams/:exam_id/questions', questions);
+app.use('/api/v1/exams/:exam_id/questions', questions);
 // Responses
-app.use('/exams/:exam_id/responses', responses);
+app.use('/api/v1/exams/:exam_id/responses', responses);
 // Answers
-app.use('/exams/:exam_id/responses/:response_id/answers', answers);
+app.use('/api/v1/exams/:exam_id/responses/:response_id/answers', answers);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

@@ -2,11 +2,6 @@ var express = require('express');
 var router = express.Router();
 var Exam = require('../models/exam');
 
-/* GET render exam creation screen */
-router.get('/create', function(req, res, next) {
-    res.render('create_exam', {});
-});
-
 /* POST creates a new exam */
 router.post('/', function(req, res, next) {
     var exam = new Exam();
