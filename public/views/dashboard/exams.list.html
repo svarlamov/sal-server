@@ -1,0 +1,11 @@
+<div>
+	<a ui-sref="overview" class="pull-right btn btn-primary btn-outline btn-rounded">Back to Overview</a>
+	<h2>Exams <small>View Your Exams</small></h2>
+	<div class="jumbotron">
+		<div class="container" data-ng-init="init()">
+            <ul class="list-group">
+                <li ng-repeat="exam in exams" class="list-group-item">{{exam}}</li>
+            </ul>
+		</div>
+	</div>
+</div>

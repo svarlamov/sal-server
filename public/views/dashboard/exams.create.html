@@ -1,18 +1,17 @@
 <div>
 	<a ui-sref="overview" class="pull-right btn btn-primary btn-outline btn-rounded">Back to Overview</a>
 	<h2>New Exam <small>Create a New Exam</small></h2>
-	<span class="glyphicon glyphicon-dashboard bg-fade"></span>
 	<div class="jumbotron">
 		<div class="container">
-			<form role="form" ng-submit="createNewExam()">
+			<form role="form" ng-submit="submit()">
 
 				<div class="form-content">
 					<div class="form-group">
-				      <input type="text" class="form-control input-underline input-lg" ng-model="exam.name" id="" placeholder="Exam Name">
+				      <input type="text" class="pull-left form-control input-lg" ng-model="exam.name" id="" placeholder="Exam Name">
 					</div>
 				</div>
 
-				<button type="submit" class="btn btn-white btn-outline btn-lg btn-rounded">Create</button>
+				<button type="submit" class="pull-left btn btn-primary btn-outline btn-lg btn-rounded">Create</button>
 
 			</form>
 		</div>

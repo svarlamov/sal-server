@@ -18,7 +18,9 @@ angular.module('yapp')
                 headers: {'Content-Type': 'application/json'}
             }).success(function (data, status, headers, config) {
                 $scope.authSuccess = data.auth;
-                $cookieStore.put('session', data.session);
+                var sessionId = data.session;
+                sessionId.replace(/%22/g, "")
+                $cookieStore.put('session', sessionId);
                 $location.path('/dashboard');
             }).error(function (data, status, headers, config) {
                 $scope.authSuccess = data.auth;

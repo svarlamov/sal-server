@@ -1,5 +1,6 @@
 var express = require('express');
 var path = require('path');
+var url = require('url');
 var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
@@ -38,9 +39,21 @@ app.use(lessMiddleware(__dirname + '/public'));
 app.use(express.static(path.join(__dirname, 'public')));
 app.use('/bower_components', express.static(path.join(__dirname, 'bower_components')));
 // If a session was supplied, set the current user
-app.use('/api', function(req, res, next) {
-    if(req.body.session){
-        Session.findById(req.body.session, function(err, ses) {
+app.use('/api/v1', function(req, res, next) {
+    var path = url.parse(req.url).pathname;
+    if(path == '/login'){
+        next();
+        return;
+    }
+    var sessionId = req.body.session;
+    if(!sessionId) {
+        sessionId = req.query.session;
+    }
+    if(!sessionId){
+        sessionId = req.params.session;
+    }
+    if(sessionId){
+        Session.findById(sessionId, function(err, ses) {
             if (err) {
                 console.error(err);
                 res.send(err);
@@ -59,11 +72,16 @@ app.use('/api', function(req, res, next) {
                         }
                     });
                 } else {
-                    req['currentUser'] = null;
-                    next();
+                    failObj = { auth: false, error: sessionId + " session is invalid" };
+                    res.status(401);
+                    res.send(failObj)
                 }
             }
         });
+    } else {
+        failObj = { auth: false, error: "You must provide a valid session id" };
+        res.status(401);
+        res.send(failObj)
     }
 });
 
@@ -104,6 +122,7 @@ if (app.get('env') === 'development') {
 // production error handler
 // no stacktraces leaked to user
 app.use(function(err, req, res, next) {
+  console.log(err);
   res.status(err.status || 500);
   res.render('error', {
     message: err.message,

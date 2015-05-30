@@ -16,7 +16,7 @@ angular
   ])
   .config(function($stateProvider, $urlRouterProvider) {
 
-    $urlRouterProvider.when('/dashboard', '/dashboard/overview');
+    $urlRouterProvider.when('/dashboard', '/dashboard/exams.list');
     $urlRouterProvider.otherwise('/login');
 
     $stateProvider
@@ -37,20 +37,16 @@ angular
           templateUrl: 'views/dashboard.html',
           controller: 'DashboardCtrl'
         })
-          .state('overview', {
-            url: '/overview',
-            parent: 'dashboard',
-            templateUrl: 'views/dashboard/overview.html'
-          })
-          .state('reports', {
-            url: '/reports',
-            parent: 'dashboard',
-            templateUrl: 'views/dashboard/reports.html'
-          })
           .state('create_exam', {
-            url: 'exam.create',
+            url: '/exams.create',
             parent: 'dashboard',
-            templateUrl: 'views/dashboard/exam.create.html',
+            templateUrl: 'views/dashboard/exams.create.html',
             controller: 'NewExamCtrl'
+          })
+          .state('list_exams', {
+            url: '/exams.list',
+            parent: 'dashboard',
+            templateUrl: 'views/dashboard/exams.list.html',
+            controller: 'ListExamCtrl'
           });
   });
