@@ -19,7 +19,6 @@ angular.module('yapp')
             }).success(function (data, status, headers, config) {
                 $scope.authSuccess = data.auth;
                 var sessionId = data.session;
-                sessionId.replace(/%22/g, "")
                 $cookieStore.put('session', sessionId);
                 $location.path('/dashboard');
             }).error(function (data, status, headers, config) {

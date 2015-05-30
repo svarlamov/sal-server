@@ -48,5 +48,17 @@ angular
             parent: 'dashboard',
             templateUrl: 'views/dashboard/exams.list.html',
             controller: 'ListExamCtrl'
+          })
+          .state('find_exam', {
+            url: '/exams.find',
+            parent: 'dashboard',
+            templateUrl: 'views/dashboard/exams.find.html',
+            controller: 'FindExamCtrl'
+          })
+          .state('take_exam', {
+            url: '/exams.take',
+            parent: 'dashboard',
+            templateUrl: 'views/dashboard/exams.take.html',
+            controller: 'TakeExamCtrl'
           });
   });
