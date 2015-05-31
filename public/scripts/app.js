@@ -12,7 +12,8 @@ angular
   .module('yapp', [
     'ui.router',
     'ngAnimate',
-    'ngCookies'
+    'ngCookies',
+    'ngCamRecorder'
   ])
   .config(function($stateProvider, $urlRouterProvider) {
 
@@ -67,10 +68,10 @@ angular
             templateUrl: 'views/dashboard/exams.view.html',
             controller: 'ViewExamCtrl'
           })
-            .state('add_question', {
-            url: '/exams.addQuestion',
-            parent: 'view_exam',
-            templateUrl: 'views/dashboard/exams.addQuestion.html',
-            controller: 'AddQuestionCtrl'
+          .state('add_question', {
+          url: '/exams.addQuestion',
+          parent: 'dashboard',
+          templateUrl: 'views/dashboard/exams.addQuestion.html',
+          controller: 'AddQuestionCtrl'
           });
   });

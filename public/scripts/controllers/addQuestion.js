@@ -5,7 +5,7 @@
  * @name yapp.controller:ViewExamCtrl
  * @description
  * # NewExamCtrl
- * Controller to view a singular exam, it's questions, and it's responses
+ * Controller to add questions
  */
 angular.module('yapp')
   .controller('AddQuestionCtrl', function($rootScope, $scope, $state, $cookieStore, $http, $location) {
