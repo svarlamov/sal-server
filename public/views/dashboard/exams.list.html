@@ -1,5 +1,5 @@
 <div>
-	<a ui-sref="overview" class="pull-right btn btn-primary btn-outline btn-rounded">Back to Overview</a>
+	<a ui-sref="list_exams" class="pull-right btn btn-primary btn-outline btn-rounded">Back to Overview</a>
 	<h2>Exams <small>View Your Exams</small></h2>
 	<div class="jumbotron">
 		<div class="container" data-ng-init="init()">
@@ -13,9 +13,11 @@
 					       </div>
 				        </div>
 				        <button type="submit" ng-click="goToExam(exam)" class="pull-left btn btn-primary btn-outline btn-rounded">View</button>
+                        <button id="deleteButton" ng-click="deleteExam(exam)" class="pull-left btn btn-primary btn-outline btn-rounded">Delete</button>
 			         </form>
 		          </div>
                 </li>
+                <div ng-show="!exams.length" class="list-group-item">You Don't Have any Exams Yet</div>
             </ul>
 		</div>
 	</div>

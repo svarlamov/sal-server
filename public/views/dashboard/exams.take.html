@@ -1,0 +1,15 @@
+<div>
+	<a ui-sref="list_exams" class="pull-right btn btn-primary btn-outline btn-rounded">Back to Overview</a>
+	<h2>Exam in Progress <small>Follow the Instructions</small></h2>
+    <script>console.log("inline javascript")</script>
+	<div class="jumbotron">
+		<div class="container">
+            <span id="result"></span><br>
+                <button class="pull-left btn btn-primary btn-outline btn-lg btn-rounded" onclick="doVideo()" id="videoButton">Record video</button> 
+                <button class="pull-left btn btn-primary btn-outline btn-lg btn-rounded" onclick="doAudio()" id="soundButton">Record sound</button>
+                <button ng-click="cancelExam()" class="pull-left btn btn-primary btn-outline btn-lg btn-rounded">Cancel Exam</button><br>
+            <span id="name"></span>
+            <script>loadPage();</script>
+		</div>
+	</div>
+</div>

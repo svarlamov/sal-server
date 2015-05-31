@@ -2,6 +2,7 @@ var express = require('express');
 var router = express.Router();
 var Exam = require('../models/exam');
 
+/* GET all of a user's exam */
 router.get('/', function(req, res, next) {
     Exam.find({ user: req.currentUser._id }, '_id name created_at', function(err, exams) {
         if(err) {
@@ -47,6 +48,19 @@ router.get('/:exam_id', function(req, res, next) {
         } else {
             res.setHeader('Content-Type', 'application/json');
             res.send(JSON.stringify(exam));
+        }
+    });
+});
+
+/* DELETE an exam */
+router.delete('/:exam_id', function(req, res, next) {
+    Exam.findByIdAndRemove(req.params.exam_id, function(err, exam) {
+        if(err) {
+            console.error(err);
+            res.send(err);
+        } else {
+            res.setHeader('Content-Type', 'application/json');
+            res.send(JSON.stringify({ deleted: true }));
         }
     });
 });

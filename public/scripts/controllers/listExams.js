@@ -32,4 +32,19 @@ angular.module('yapp')
         $location.path('/dashboard/exams.view')
         return false;
     }
+    $scope.deleteExam = function(exam) {
+        $http({
+            url: 'http://localhost:3000/api/v1/exams/' + exam._id + '?session=' + $cookieStore.get('session'),
+            method: "DELETE",
+            headers: {'Content-Type': 'application/json'}
+        }).success(function (data, status, headers, config) {
+            $location.path('/dashboard');
+        }).error(function (data, status, headers, config) {
+            if(status == 401) {
+                $scope.authSuccess = false;
+                $cookieStore.put('session', 'null');
+                $location.path('/login');
+            }
+        });
+    }
   });

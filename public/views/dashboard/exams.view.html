@@ -1,9 +1,10 @@
 <div>
-	<a ui-sref="overview" class="pull-right btn btn-primary btn-outline btn-rounded">Back to Overview</a>
+	<a ui-sref="list_exams" class="pull-right btn btn-primary btn-outline btn-rounded">Back to Overview</a>
 	<h2>{{exam.name}} <small>{{exam._id}}</small></h2>
 	<div class="jumbotron">
 		<div class="container" data-ng-init="loadExam()">
             {{exam}}
+            <a ui-sref="add_question" class="pull-right btn btn-primary btn-outline btn-rounded">Add a Question</a>
 		</div>
 	</div>
 </div>

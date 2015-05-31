@@ -9,13 +9,18 @@
  */
 angular.module('yapp')
   .controller('FindExamCtrl', function($scope, $state, $cookieStore, $http, $location) {
-    $scope.findExam = function() {
+    $scope.startExam = function(examCode) {
         $http({
-            url: 'http://localhost:3000/api/v1/exams/' + $scope.examId + '?session=' + $cookieStore.get('session'),
+            url: 'http://localhost:3000/api/v1/exams/' + examCode + '?session=' + $cookieStore.get('session'),
             method: "GET",
             headers: {'Content-Type': 'application/json'}
         }).success(function (data, status, headers, config) {
-            $scope.exam = data;
+            if(data._id){
+                $cookieStore.put('exam_in_progress', data._id);
+                $location.path('/dashboard/exams.take');
+            } else {
+                // TODO: Flash a message that the exam was not found
+            }
         }).error(function (data, status, headers, config) {
             if(status == 401) {
                 $scope.authSuccess = false;
@@ -24,5 +29,5 @@ angular.module('yapp')
             }
         });
         return false;
-        }
+    }
   });

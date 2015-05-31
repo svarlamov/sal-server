@@ -1,18 +1,15 @@
 <div>
-	<a ui-sref="overview" class="pull-right btn btn-primary btn-outline btn-rounded">Back to Overview</a>
+	<a ui-sref="list_exams" class="pull-right btn btn-primary btn-outline btn-rounded">Back to Overview</a>
 	<h2>Take an Exam <small>Find Your Exam by Submitting the Exam Code Below</small></h2>
 	<div class="jumbotron">
 		<div class="container">
-			<form role="form" ng-submit="submit()">
-
+			<form role="form">
 				<div class="form-content">
 					<div class="form-group">
 				      <input type="text" class="pull-left form-control input-lg" ng-model="exam.code" id="" placeholder="Exam Code">
 					</div>
 				</div>
-
-				<button type="submit" class="pull-left btn btn-primary btn-outline btn-lg btn-rounded">Find My Exam</button>
-
+				<button type="submit" ng-click="startExam(exam.code)" class="pull-left btn btn-primary btn-outline btn-lg btn-rounded">Find My Exam</button>
 			</form>
 		</div>
 	</div>
