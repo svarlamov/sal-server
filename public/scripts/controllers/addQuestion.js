@@ -7,6 +7,8 @@
  * # NewExamCtrl
  * Controller to add questions
  */
+var urlForNewQuestionUpload = null;
+
 angular.module('yapp')
   .controller('AddQuestionCtrl', function($rootScope, $scope, $state, $cookieStore, $http, $location) {
     $scope.postQuestion = function(file) {
@@ -31,4 +33,5 @@ angular.module('yapp')
         });
         return false;
     }
+    urlForNewQuestionUpload = 'http://localhost:3000/api/v1/exams/' + $rootScope.examIdToLoad + '/questions?session=' + $cookieStore.get('session');
   });

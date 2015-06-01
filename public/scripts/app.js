@@ -13,7 +13,7 @@ angular
     'ui.router',
     'ngAnimate',
     'ngCookies',
-    'ngCamRecorder'
+    'webcam'
   ])
   .config(function($stateProvider, $urlRouterProvider) {
 
