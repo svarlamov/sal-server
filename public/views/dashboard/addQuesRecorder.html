@@ -74,9 +74,13 @@
         files.uploadOnlyAudio = !video;
         videoElement.src = '';
         videoElement.poster = '/ajax-loader.gif';
-        xhr(urlForNewQuestionUpload, JSON.stringify(files), function(_fileName) {
+        xhr(urlForNewQuestionUpload, JSON.stringify(files), function(_rxData) {
             var href = location.href.substr(0, location.href.lastIndexOf('/') + 1);
-            videoElement.src = href + 'uploads/' + _fileName;
+            href.replace('/#/dashboard', '/api/v1/exams');
+            console.log(href);
+            videoElement.src = href + _rxData.exam_id + '/questions/' + _rxData.question_id + '/file';
+            console.log("Set source to: " + href + _rxData.exam_id + '/questions/' + _rxData.question_id + '/file');
+            console.log("videoElement.src=" + videoElement.src);
             videoElement.play();
             videoElement.muted = false;
             videoElement.controls = true;
@@ -91,7 +95,7 @@
         var request = new XMLHttpRequest();
         request.onreadystatechange = function() {
             if (request.readyState == 4 && request.status == 200) {
-                callback(request.responseText);
+                callback(JSON.parse(request.responseText));
             }
         };
         request.upload.onprogress = function(event) {

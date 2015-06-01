@@ -5,6 +5,7 @@ var sys = require('sys');
 var exec = require('child_process').exec;
 //var busboy = require('connect-busboy');
 var router = express.Router({mergeParams : true});
+var Question = require('../models/question');
 
 /* GET all questions for the exam */
 router.get('/', function(req, res, next) {
@@ -15,17 +16,25 @@ router.get('/', function(req, res, next) {
 /* POST upload question for the exam */
 router.post('/', function(req, res, next) {
     var examId = req.params.exam_id;
-    upload(res, req.body);
+    upload(res, req.body, examId);
 });
 
 /* GET question for the exam */
-router.get('/:question_id', function(req, res, next) {
+router.get('/:question_id/file', function(req, res, next) {
     var questionId = req.params.question_id;
     var examId = req.params.exam_id;
-    res.send('Returning question ' + questionId + ' for exam ' + examId);
+    Question.findById(questionId, function(err, question) {
+        if(err) {
+            console.error(err);
+            res.send(err);
+        } else {
+            console.log("Sending file to user");
+            res.sendFile('../uploads/' + question.file);
+        }
+    });
 });
 
-function upload(response, files) {
+function upload(response, files, examId) {
     var audioPath = null;
     var videoPath = null;
 
@@ -33,29 +42,32 @@ function upload(response, files) {
     audioPath = _upload(response, files.audio);
 
     if (files.uploadOnlyAudio) {
+        var newQuestion = new Question({ file: audioPath });
+        newQuestion.save();
+        console.log(newQuestion._id);
+        newQuestion.pushToExam(newQuestion._id, examId)
         response.status(200);
         response.setHeader('Content-Type', 'application/json');
-        response.send(files.audio.name);
+        response.send(newQuestion._id);
     }
 
     if (!files.uploadOnlyAudio) {
         // writing video file to disk
         videoPath = _upload(response, files.video);
-
-        merge(response, files, audioPath, videoPath);
+        merge(response, files, audioPath, videoPath, examId);
     }
 }
 
 
 // this function merges wav/webm files
-function merge(response, files, audioPath, videoPath) {
+function merge(response, files, audioPath, videoPath, examId) {
     // detect the current operating system
     var isWin = !!process.platform.match( /^win/ );
 
     if (isWin) {
-        ifWin(response, files, audioPath, videoPath);
+        ifWin(response, files, audioPath, videoPath, examId);
     } else {
-        ifMac(response, files, audioPath, videoPath);
+        ifMac(response, files, audioPath, videoPath, examId);
     }
 }
 
@@ -67,11 +79,8 @@ function _upload(response, file) {
         filePath = fileRootNameWithBase + '.' + fileExtension,
         fileID = 2,
         fileBuffer;
-    
-    console.log("Dir Exists: " + fs.existsSync(config.upload_dir));
 
     while (fs.existsSync(filePath)) {
-        console.log("The path exists");
         filePath = fileRootNameWithBase + '(' + fileID + ').' + fileExtension;
         fileID += 1;
     }
@@ -112,17 +121,19 @@ function ifWin(response, files, audioPath, videoPath) {
             console.log('Error code: ' + error.code);
             console.log('Signal received: ' + error.signal);
         } else {
-            response.status(200);
-            response.setHeader('Content-Type', 'application/json');
-            response.send(files.audio.name.split('.')[0] + '-merged.webm');
-
+            //response.status(200);
+            //response.setHeader('Content-Type', 'application/json');
+            //response.send(files.audio.name.split('.')[0] + '-merged.webm');
+            // removing audio/video files
             fs.unlink(audioFile);
             fs.unlink(videoFile);
+            // Return the name of the newly created file
+            return files.audio.name.split('.')[0] + '-merged.webm';
         }
     });
 }
 
-function ifMac(response, files) {
+function ifMac(response, files, audioPath, videoPath, examId) {
     // its probably *nix, assume ffmpeg is available
     //var audioFile = __dirname + '/uploads/' + files.audio.name;
     //var videoFile = __dirname + '/uploads/' + files.video.name;
@@ -145,12 +156,14 @@ function ifMac(response, files) {
             console.log('exec error: ' + error);
             response.status(404);
             response.send();
-
         } else {
+            var newQuestion = new Question({ file: files.audio.name.split('.')[0] + '-merged.webm' });
+            newQuestion.save();
+            console.log(newQuestion._id);
+            newQuestion.pushToExam(newQuestion, examId);
             response.status(200);
             response.setHeader('Content-Type', 'application/json');
-            response.send(files.audio.name.split('.')[0] + '-merged.webm');
-
+            response.send({ exam_id: examId, question_id: newQuestion._id });
             // removing audio/video files
             fs.unlink(audioFile);
             fs.unlink(videoFile);
