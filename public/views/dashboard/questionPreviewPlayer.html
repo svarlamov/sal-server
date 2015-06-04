@@ -1,0 +1,42 @@
+<div>
+    <p>
+        <video></video>
+    </p>
+    <hr />
+
+    <div>
+        <button id="btn-start-recording" class="pull-left btn btn-primary btn-outline btn-rounded">Record</button>
+        <button id="btn-stop-recording" class="pull-left btn btn-primary btn-outline btn-rounded" disabled="">Stop</button>
+    </div>
+
+    <script type="text/javascript-lazy">
+    // fetching DOM references
+    var btnStartRecording = document.querySelector('#btn-start-recording');
+    var btnStopRecording = document.querySelector('#btn-stop-recording');
+    var videoElement = document.querySelector('video');
+    var progressBar = document.querySelector('#progress-bar');
+    var percentage = document.querySelector('#percentage');
+    </script>
+
+    <script type="text/javascript-lazy">
+    // global variables
+    var currentBrowser = !!navigator.mozGetUserMedia ? 'gecko' : 'chromium';
+    var fileName;
+    var audioRecorder;
+    var videoRecorder;
+    // Firefox can record both audio/video in single webm container
+    // Don't need to create multiple instances of the RecordRTC for Firefox
+    // You can even use below property to force recording only audio blob on chrome
+    // var isRecordOnlyAudio = true;
+    var isRecordOnlyAudio = !!navigator.mozGetUserMedia;
+    // if recording only audio, we should replace "HTMLVideoElement" with "HTMLAudioElement"
+    if (isRecordOnlyAudio && currentBrowser == 'chromium') {
+        var parentNode = videoElement.parentNode;
+        parentNode.removeChild(videoElement);
+        videoElement = document.createElement('audio');
+        videoElement.style.padding = '.4em';
+        videoElement.controls = true;
+        parentNode.appendChild(videoElement);
+    }
+    </script>
+</div>

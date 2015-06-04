@@ -13,6 +13,7 @@ angular
     'ui.router',
     'ngAnimate',
     'ngCookies',
+    'ngRoute',
     'webcam'
   ])
   .config(function($stateProvider, $urlRouterProvider) {
@@ -67,6 +68,12 @@ angular
             parent: 'dashboard',
             templateUrl: 'views/dashboard/exams.view.html',
             controller: 'ViewExamCtrl'
+          })
+          .state('preview_question', {
+            url: '/exams.previewQuestion',
+            parent: 'dashboard',
+            templateUrl: 'views/dashboard/exams.previewQuestion.html',
+            controller: 'PreviewQuestionCtrl'
           })
           .state('add_question', {
           url: '/exams.addQuestion',

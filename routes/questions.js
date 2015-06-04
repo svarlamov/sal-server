@@ -6,11 +6,20 @@ var exec = require('child_process').exec;
 //var busboy = require('connect-busboy');
 var router = express.Router({mergeParams : true});
 var Question = require('../models/question');
+var Exam = require('../models/exam');
 
 /* GET all questions for the exam */
 router.get('/', function(req, res, next) {
-    var examId = req.params.exam_id
-    res.send('Returning all files for exam ' + examId);
+    var examId = req.params.exam_id;
+    Exam.findById(examId).populate('questions').exec(function(err, exam) {
+        if(err) {
+            console.error(err);
+            res.send(err);
+        } else {
+            res.setHeader('Content-Type', 'application/json');
+            res.send(JSON.stringify(exam.questions));
+        }
+    });
 });
 
 /* POST upload question for the exam */
@@ -19,7 +28,7 @@ router.post('/', function(req, res, next) {
     upload(res, req.body, examId);
 });
 
-/* GET question for the exam */
+/* GET the file for the question for the exam */
 router.get('/:question_id/file', function(req, res, next) {
     var questionId = req.params.question_id;
     var examId = req.params.exam_id;
@@ -27,9 +36,12 @@ router.get('/:question_id/file', function(req, res, next) {
         if(err) {
             console.error(err);
             res.send(err);
+        } else if(question) {
+            res.sendFile(__dirname.replace('routes', '') + 'uploads/' + question.file);
         } else {
-            console.log("Sending file to user");
-            res.sendFile('../uploads/' + question.file);
+            res.status(400);
+            response.setHeader('Content-Type', 'application/json');
+            res.send({ ok: false, reason: 'Invalid Question or Exam Id'});
         }
     });
 });

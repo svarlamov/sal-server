@@ -17,7 +17,7 @@ angular.module('yapp')
         }).success(function (data, status, headers, config) {
             if(data._id){
                 $cookieStore.put('exam_in_progress', data._id);
-                $location.path('/dashboard/exams.take');
+                $location.path('/dashboard/exams.previewQuestion');
             } else {
                 // TODO: Flash a message that the exam was not found
             }

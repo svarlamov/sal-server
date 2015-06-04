@@ -1,0 +1,19 @@
+<div>
+	<a ui-sref="list_exams" class="pull-right btn btn-primary btn-outline btn-rounded">Back to Overview</a>
+	<h2>Preview <small>Listen to the Questions</small></h2>
+	<div class="jumbotron">
+		<div class="container">
+            <div class="container" data-ng-init="init()">
+            <ul class="list-group">
+                <li ng-repeat="question in questions" class="list-group-item">
+                    <div class="container">
+                    Question {{question.number}}
+				    <button ng-click="previewQuestion(question)" class="btn btn-primary btn-outline btn-rounded">Preview</button>
+		          </div>
+                </li>
+                <div ng-show="!questions.length" class="list-group-item">This Exam Doesn't Have any Quetions Yet</div>
+                <hr />
+            </ul>
+            <video ng-show="showVideo" controls src={{questionSrc}} autoplay={{playVideo}} poster="/ajax-loader.gif"></video>
+	</div>
+</div>

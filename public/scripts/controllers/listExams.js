@@ -9,7 +9,7 @@
  */
 
 angular.module('yapp')
-  .controller('ListExamCtrl', function($rootScope, $scope, $state, $cookieStore, $http, $location) {
+  .controller('ListExamCtrl', function($rootScope, $scope, $state, $cookieStore, $http, $location, $route) {
     $scope.submit = function() { $scope.init(); }
     $scope.init = function() {
         $http({
@@ -38,7 +38,7 @@ angular.module('yapp')
             method: "DELETE",
             headers: {'Content-Type': 'application/json'}
         }).success(function (data, status, headers, config) {
-            $location.path('/dashboard');
+            $route.reload();
         }).error(function (data, status, headers, config) {
             if(status == 401) {
                 $scope.authSuccess = false;

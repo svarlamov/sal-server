@@ -2,10 +2,10 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
 var responseSchema = new Schema({
-  name: { type: String, required: true },
-  email: { type: String, required: true },
   user: { type: mongoose.Schema.ObjectId, ref: 'User' },
   answers: [{ type: mongoose.Schema.ObjectId, ref: 'Answer' }],
+  submitted: { type: Boolean, default: false },
+  onNumber: { type: Number, default: 0 },
   created_at: Date,
   updated_at: Date
 });
