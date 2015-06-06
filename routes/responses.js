@@ -120,7 +120,26 @@ router.get('/:resp_id/currentQuestion', function(req, res, next) {
 
 /* POST submit the response */
 router.post('/:resp_id/submit', function(req, res, next) {
-    // TODO: Actually submit the resonse, and make it visible
+    Exam.findById(req.params.exam_id, function(err, exam) {
+        if (err) {
+            console.error(err);
+            res.send(err);
+        }
+        exam.responses.forEach(function(respId, index) {
+            if(respId == req.params.resp_id){
+                Response.findById(respId, function(err, response) {
+                    if (err) {
+                        console.error(err);
+                        res.send(err);
+                    }
+                    response.submitted = true;
+                    response.save();
+                    res.setHeader('Content-Type', 'application/json');
+                    res.send(JSON.stringify({ success: true }));
+                });
+            }
+        });
+    });
 });
 
 module.exports = router;

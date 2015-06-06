@@ -3,8 +3,17 @@
 	<h2>{{exam.name}} <small>{{exam._id}}</small></h2>
 	<div class="jumbotron">
 		<div class="container" data-ng-init="loadExam()">
-            {{exam}}
-            <a ui-sref="add_question" class="pull-right btn btn-primary btn-outline btn-rounded">Add a Question</a>
+            <a ui-sref="add_question" class="btn btn-primary btn-outline btn-rounded">Add a Question</a>
+            <hr />
+            <ul class="list-group">
+                <li ng-repeat="response in exam.responses" class="list-group-item">
+                    <div class="container">
+                        Response {{response}}
+				    <button ng-click="viewResponse(response)" class="btn btn-primary btn-outline btn-rounded">View</button>
+		          </div>
+                </li>
+                <div ng-show="!exam.responses.length" class="list-group-item">This Exam Doesn't Have any Responses Yet</div>
+            </ul>
 		</div>
 	</div>
 </div>

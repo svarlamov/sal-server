@@ -11,7 +11,7 @@ angular.module('yapp')
   .controller('ViewExamCtrl', function($rootScope, $scope, $state, $cookieStore, $http, $location) {
     $scope.loadExam = function() {
         if(!$rootScope.examIdToLoad) {
-            $location.path('/dashboard');
+            $location.path('/dashboard/exams.list');
             return false;
         }
         $http({
@@ -27,6 +27,12 @@ angular.module('yapp')
                 $location.path('/login');
             }
         });
+        return false;
+    }
+    $scope.viewResponse = function(response) {
+        // TODO: Load the response and redirect
+        $rootScope.responseIdToLoad = response;
+        $location.path('/dashboard/exams.viewResponse');
         return false;
     }
   });

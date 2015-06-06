@@ -1,6 +1,6 @@
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
-var Question = require('./question')
+var Question = require('./question');
 
 var examSchema = new Schema({
     name: String,

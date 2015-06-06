@@ -15,13 +15,13 @@ router.get('/', function(req, res, next) {
             console.error(err);
             res.send(err);
         } else {
-            Response.findById(req.params.resp_id, function(err, response) {
+            Response.findById(req.params.resp_id).populate('answers').exec(function(err, response) {
                 if (err) {
                     console.error(err);
                     res.send(err);
                 } else {
                     res.setHeader('Content-Type', 'application/json');
-                    res.send(JSON.stringify(exam.populate('responses').responses.answers));
+                    res.send(JSON.stringify(response.answers));
                 }
             });
         }
@@ -74,6 +74,36 @@ router.get('/:answer_id', function(req, res, next) {
                             Answer.findById(ansId, function(err, answer) {
                                 res.setHeader('Content-Type', 'application/json');
                                 res.send(JSON.stringify(answer));
+                            });
+                        }
+                    });
+                });
+            }
+        });
+    });
+});
+
+/* GET the file for an answer */
+router.get('/:answer_id/file', function(req, res, next) {
+    Exam.findById(req.params.exam_id, function(err, exam) {
+        if (err) console.error(err);
+        exam.responses.forEach(function(respId, index) {
+            if(respId == req.params.resp_id){
+                Response.findById(respId, function(err, response) {
+                    if (err) console.error(err);
+                    response.answers.forEach(function(ansId, index) {
+                        if(ansId == req.params.answer_id) {
+                            Answer.findById(ansId, function(err, answer) {
+                                if(err) {
+                                    console.error(err);
+                                    res.send(err);
+                                } else if(answer) {
+                                    res.sendFile(__dirname.replace('routes', '') + 'uploads/' + answer.file);
+                                } else {
+                                    res.status(400);
+                                    res.setHeader('Content-Type', 'application/json');
+                                    res.send({ ok: false, reason: 'Invalid Answer or Exam Id' });
+                                }
                             });
                         }
                     });

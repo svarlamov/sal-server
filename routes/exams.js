@@ -2,7 +2,7 @@ var express = require('express');
 var router = express.Router();
 var Exam = require('../models/exam');
 
-/* GET all of a user's exam */
+/* GET all of a user's exams */
 router.get('/', function(req, res, next) {
     Exam.find({ user: req.currentUser._id }, '_id name created_at', function(err, exams) {
         if(err) {

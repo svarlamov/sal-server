@@ -19,6 +19,7 @@ questionSchema.pre('save', function(next) {
 });
 
 questionSchema.methods.pushAndNumber = function(question, examId) {
+    var Exam = require('./exam');
     Exam.findById(examId, function(err, exam) {
         if(err) {
             console.error(err);
@@ -29,7 +30,7 @@ questionSchema.methods.pushAndNumber = function(question, examId) {
             exam.questions.push(question._id);
             exam.save();
         }
-    })
+    });
 }
 
 var Question = mongoose.model('Question', questionSchema);
