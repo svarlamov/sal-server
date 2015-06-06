@@ -46,6 +46,22 @@ router.get('/:question_id/file', function(req, res, next) {
     });
 });
 
+/* DELETE the question and file for the exam */
+router.delete('/:question_id', function(req, res, next) {
+    var questionId = req.params.question_id;
+    var examId = req.params.exam_id;
+    Question.findByIdAndRemove(questionId, function(err, question) {
+        console.log(question._id)
+        if(err) {
+            console.error(err);
+            res.send(err);
+        } else {
+            res.setHeader('Content-Type', 'application/json');
+            res.send({ success: true });
+        }
+    });
+});
+
 function upload(response, files, examId) {
     var audioPath = null;
     var videoPath = null;
