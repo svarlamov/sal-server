@@ -24,7 +24,7 @@ router.get('/', function(req, res, next) {
 router.post('/', function(req, res, next) {
     if(!req.body.name) {
         res.status(400);
-        res.send({ error: "Your request must contain a name in the body" });
+        res.send({ message: "Your request must contain a name in the body of the request" });
         return;
     }
     var exam = new Exam({ user: req.currentUser._id, name: req.body.name });
