@@ -30,11 +30,6 @@ router.get('/', function(req, res, next) {
 
 /* POST the answer to the current question */
 router.post('/', function(req, res, next) {
-    if(!req.body.number) {
-        res.status(400);
-        res.send({ message: "You must include the number" });
-        return;
-    }
     Exam.findById(req.params.exam_id, function(err, exam) {
         if (err) {
             console.error(err);
@@ -121,7 +116,7 @@ function upload(response, files, resp) {
     audioPath = _upload(response, files.audio);
 
     if (files.uploadOnlyAudio) {
-        var newAnswer = new Answer({ file: audioPath, number: files.number});
+        var newAnswer = new Answer({ file: audioPath, number: resp.onNumber});
         newAnswer.save();
         console.log(newAnswer._id);
         resp.answers.push(newAnswer._id);
@@ -237,7 +232,7 @@ function ifMac(response, files, audioPath, videoPath, resp) {
             response.status(404);
             response.send();
         } else {
-            var newAnswer = new Answer({ file: files.audio.name.split('.')[0] + '-merged.webm', number: files.number });
+            var newAnswer = new Answer({ file: files.audio.name.split('.')[0] + '-merged.webm', number: resp.onNumber });
             newAnswer.save();
             console.log(newAnswer._id);
             resp.answers.push(newAnswer._id);

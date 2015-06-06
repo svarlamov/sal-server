@@ -75,7 +75,6 @@
         files.uploadOnlyAudio = !video;
         videoElement.src = '';
         videoElement.poster = '/ajax-loader.gif';
-        files.number = currentQuestionNumber + 1;
         xhr(baseUrl + '/answers?session=' + getCookie('session').replace(/%22/g, ''), JSON.stringify(files), function(_rxData) {
             currentQuestionNumber++;
             if(currentQuestionNumber > questionCount) {
