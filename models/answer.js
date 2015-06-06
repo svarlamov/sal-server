@@ -2,7 +2,7 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
 var answerSchema = new Schema({
-  number: Number,
+  number: { type: Number, required: true },
   file: { type: String, required: true },
   created_at: Date,
   updated_at: Date

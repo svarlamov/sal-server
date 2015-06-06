@@ -4,27 +4,17 @@ var busboy = require('connect-busboy');
 var router = express.Router({mergeParams : true});
 var Exam = require('../models/exam');
 var Response = require('../models/response');
+var Answer = require('../models/answer');
 
 /* GET all responses */
 router.get('/', function(req, res, next) {
-    Exam.findById(req.params.exam_id, function(err, exam){
+    Exam.findById(req.params.exam_id).populate('responses').exec(function(err, exam){
         if (err) {
             console.error(err);
             res.send(err);
         } else {
-            /*
-            var responses = [exam.responses.length];
-            exam.responses.forEach(function(resp, index){
-                Response.findById(resp, function(err, res){
-                    if (err) console.error(err);
-                    responses[index] = res;
-                });
-            });
             res.setHeader('Content-Type', 'application/json');
-            res.send(JSON.stringify(responses));
-            */
-            res.setHeader('Content-Type', 'application/json');
-            res.send(JSON.stringify(exam.populate('responses').responses));
+            res.send(JSON.stringify(exam.responses));
         }
     });
 });
@@ -40,9 +30,15 @@ router.post('/', function(req, res, next) {
                 res.send(err);
             } else {
                 exam.responses.push(response);
-                exam.save(function(err){if(err) console.error(err);});
-                res.setHeader('Content-Type', 'application/json');
-                res.send(JSON.stringify(response));
+                exam.save(function(err){
+                    if(err) {
+                        console.error(err);
+                        res.send(err);
+                    } else {
+                        res.setHeader('Content-Type', 'application/json');
+                        res.send(JSON.stringify(response));
+                    }
+                });
             }
         });
     });
@@ -64,186 +60,67 @@ router.get('/:resp_id', function(req, res, next) {
     });
 });
 
-/* GET a link to the next question in the exam */
-router.get('/:resp_id/currentQuestion', function(req, res, next) {
-    // TODO: Actually send the next question for the user
-    Response.findById(req.params.resp_id, function(err, resp) {
+/* DELETE a response */
+router.delete('/:resp_id', function(req, res, next) {
+    Exam.findById(req.params.exam_id, function(err, exam) {
         if (err) {
             console.error(err);
             res.send(err);
-        } else if(resp) {
-            //resp.questions.
-        } else {
-            res.send("There are no more questions left");
         }
-    });
-    
-    
-    var examId = req.params.exam_id;
-    Question.findById(questionId, function(err, question) {
-        if(err) {
-            console.error(err);
-            res.send(err);
-        } else if(question) {
-            res.sendFile(__dirname.replace('routes', '') + 'uploads/' + question.file);
-        } else {
-            res.status(400);
-            res.send({ ok: false, reason: 'Invalid Question or Exam Id'});
-        }
+        exam.responses.forEach(function(respId, index) {
+            if(respId == req.params.resp_id){
+                Response.findByIdAndRemove(respId, function(err, response) {
+                    if (err) console.error(err);
+                    res.setHeader('Content-Type', 'application/json');
+                    res.send(JSON.stringify({ success: true }));
+                });
+            }
+        });
     });
 });
 
-/* POST the answer to the current question */
-router.post('/:resp_id/answer', function(req, res, next){
-    // TODO: Actually upload the next question
+/* GET the file for the next question in the exam */
+router.get('/:resp_id/currentQuestion', function(req, res, next) {
+    Exam.findById(req.params.exam_id).populate('questions').exec(function(err, exam) {
+        if(err) {
+            console.error(err);
+            res.send(err);
+        } else if(exam) {
+            console.log(exam.responses.length);
+            exam.responses.forEach(function(resp, index) {
+                if(resp == req.params.resp_id) {
+                    Response.findById(resp, function(err, response) {
+                        if(err) {
+                            console.log(err);
+                            res.send(err);
+                        } else if(response) {
+                            // TODO: Actually get the number
+                            exam.findQuestionByNumber(exam, response.onNumber + 1, function(err, question) {
+                                if(err) {
+                                    console.error(err);
+                                    res.send(err);
+                                } else if(question) {
+                                    res.sendFile(__dirname.replace('routes', '') + 'uploads/' + question.file);
+                                } else {
+                                    res.send(JSON.stringify({ done: true }));
+                                }
+                            });
+                        } else {
+                            res.status(404);
+                            res.send(JSON.stringify({ message: 'Could not find the response'}))
+                        }
+                    });
+                }
+            });
+        } else {
+            res.send(JSON.stringify({ message: "Invalid exam ID" }))
+        }
+    });
 });
 
 /* POST submit the response */
 router.post('/:resp_id/submit', function(req, res, next) {
     // TODO: Actually submit the resonse, and make it visible
 });
-
-/* DELETE the response, and all of its answers off of the server */
-router.delete('/:resp_id', function(req, res, next) {
-    // TODO: Actually delete the response and all of its files
-});
-
-function upload(response, files, examId) {
-    var audioPath = null;
-    var videoPath = null;
-
-    // writing audio file to disk
-    audioPath = _upload(response, files.audio);
-
-    if (files.uploadOnlyAudio) {
-        var newQuestion = new Question({ file: audioPath });
-        newQuestion.save();
-        console.log(newQuestion._id);
-        newQuestion.pushToExam(newQuestion._id, examId)
-        response.status(200);
-        response.setHeader('Content-Type', 'application/json');
-        response.send(newQuestion._id);
-    }
-
-    if (!files.uploadOnlyAudio) {
-        // writing video file to disk
-        videoPath = _upload(response, files.video);
-        merge(response, files, audioPath, videoPath, examId);
-    }
-}
-
-
-// this function merges wav/webm files
-function merge(response, files, audioPath, videoPath, examId) {
-    // detect the current operating system
-    var isWin = !!process.platform.match( /^win/ );
-
-    if (isWin) {
-        ifWin(response, files, audioPath, videoPath, examId);
-    } else {
-        ifMac(response, files, audioPath, videoPath, examId);
-    }
-}
-
-function _upload(response, file) {
-    var fileRootName = file.name.split('.').shift(),
-        fileExtension = file.name.split('.').pop(),
-        filePathBase = config.upload_dir + '/',
-        fileRootNameWithBase = filePathBase + fileRootName,
-        filePath = fileRootNameWithBase + '.' + fileExtension,
-        fileID = 2,
-        fileBuffer;
-
-    while (fs.existsSync(filePath)) {
-        filePath = fileRootNameWithBase + '(' + fileID + ').' + fileExtension;
-        fileID += 1;
-    }
-
-    file.contents = file.contents.split(',').pop();
-
-    fileBuffer = new Buffer(file.contents, "base64");
-    console.log(filePath);
-
-    fs.writeFileSync(filePath, fileBuffer);
-    
-    return filePath;
-}
-
-function hasMediaType(type) {
-    var isHasMediaType = false;
-    ['audio/wav', 'audio/ogg', 'video/webm', 'video/mp4'].forEach(function(t) {
-      if(t== type) isHasMediaType = true;
-    });
-    
-    return isHasMediaType;
-}
-
-function ifWin(response, files, audioPath, videoPath) {
-    // following command tries to merge wav/webm files using ffmpeg
-    var merger = __dirname + '\\merger.bat';
-    var audioFile = __dirname + '\\uploads\\' + files.audio.name;
-    var videoFile = __dirname + '\\uploads\\' + files.video.name;
-    var mergedFile = __dirname + '\\uploads\\' + files.audio.name.split('.')[0] + '-merged.webm';
-
-    // if a "directory" has space in its name; below command will fail
-    // e.g. "c:\\dir name\\uploads" will fail.
-    // it must be like this: "c:\\dir-name\\uploads"
-    var command = merger + ', ' + audioFile + " " + videoFile + " " + mergedFile + '';
-    exec(command, function (error, stdout, stderr) {
-        if (error) {
-            console.log(error.stack);
-            console.log('Error code: ' + error.code);
-            console.log('Signal received: ' + error.signal);
-        } else {
-            //response.status(200);
-            //response.setHeader('Content-Type', 'application/json');
-            //response.send(files.audio.name.split('.')[0] + '-merged.webm');
-            // removing audio/video files
-            fs.unlink(audioFile);
-            fs.unlink(videoFile);
-            // Return the name of the newly created file
-            return files.audio.name.split('.')[0] + '-merged.webm';
-        }
-    });
-}
-
-function ifMac(response, files, audioPath, videoPath, examId) {
-    // its probably *nix, assume ffmpeg is available
-    //var audioFile = __dirname + '/uploads/' + files.audio.name;
-    //var videoFile = __dirname + '/uploads/' + files.video.name;
-    //var mergedFile = __dirname + '/uploads/' + files.audio.name.split('.')[0] + '-merged.webm';
-    var actualDirname = __dirname.replace('/routes', '');
-    var audioFile = actualDirname + '/uploads/' + files.audio.name;
-    var videoFile = actualDirname + '/uploads/' + files.video.name;
-    var mergedFile = actualDirname + '/uploads/' + files.audio.name.split('.')[0] + '-merged.webm';
-    
-    var util = require('util'),
-        exec = require('child_process').exec;
-
-    var command = "ffmpeg -i " + audioFile + " -i " + videoFile + " -map 0:0 -map 1:0 " + mergedFile;
-
-    exec(command, function (error, stdout, stderr) {
-        if (stdout) console.log(stdout);
-        if (stderr) console.log(stderr);
-
-        if (error) {
-            console.log('exec error: ' + error);
-            response.status(404);
-            response.send();
-        } else {
-            var newQuestion = new Question({ file: files.audio.name.split('.')[0] + '-merged.webm' });
-            newQuestion.save();
-            console.log(newQuestion._id);
-            newQuestion.pushToExam(newQuestion, examId);
-            response.status(200);
-            response.setHeader('Content-Type', 'application/json');
-            response.send({ exam_id: examId, question_id: newQuestion._id });
-            // removing audio/video files
-            fs.unlink(audioFile);
-            fs.unlink(videoFile);
-        }
-
-    });
-}
 
 module.exports = router;

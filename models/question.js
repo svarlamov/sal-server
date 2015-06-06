@@ -3,14 +3,11 @@ var Schema = mongoose.Schema;
 var Exam = require('./exam');
 
 var questionSchema = new Schema({
-  number: Number,
-  file: String
+  number: { type: Number, required: true },
+  file: { type: String, required: true }
 });
 
 questionSchema.pre('save', function(next) {
-  // TODO: Actually set the number of the question
-  this.number = 1;
-    
   var currentDate = new Date();
   
   this.updated_at = currentDate;
@@ -21,12 +18,14 @@ questionSchema.pre('save', function(next) {
   next();
 });
 
-questionSchema.methods.pushToExam = function(question, examId) {
+questionSchema.methods.pushAndNumber = function(question, examId) {
     Exam.findById(examId, function(err, exam) {
         if(err) {
             console.error(err);
             return;
         } else {
+            question.number = exam.questions.length + 1;
+            question.save();
             exam.questions.push(question._id);
             exam.save();
         }

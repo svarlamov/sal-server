@@ -5,35 +5,34 @@
     <hr />
 
     <div>
-        <label id="percentage">0%</label>
-        <progress id="progress-bar" value="0"></progress>
-        <br />
-    </div>
-
-    <hr />
-
-    <div>
         <button id="btn-start-recording" class="pull-left btn btn-primary btn-outline btn-rounded">Record</button>
         <button id="btn-stop-recording" class="pull-left btn btn-primary btn-outline btn-rounded" disabled="">Stop</button>
     </div>
 
+
     <script type="text/javascript-lazy">
-    // Test if we have access to the scope
-    console.log(urlForNewQuestionUpload);
     // fetching DOM references
+    var videoElement = document.querySelector('video');
     var btnStartRecording = document.querySelector('#btn-start-recording');
     var btnStopRecording = document.querySelector('#btn-stop-recording');
-    var videoElement = document.querySelector('video');
-    var progressBar = document.querySelector('#progress-bar');
-    var percentage = document.querySelector('#percentage');
     </script>
 
     <script type="text/javascript-lazy">
+    // A utility method for getting cookies
+    function getCookie(name) {
+        var value = "; " + document.cookie;
+        var parts = value.split("; " + name + "=");
+        if (parts.length == 2) return parts.pop().split(";").shift();
+    }
     // global variables
     var currentBrowser = !!navigator.mozGetUserMedia ? 'gecko' : 'chromium';
     var fileName;
     var audioRecorder;
     var videoRecorder;
+    var currentQuestionNumber = 0;
+    var href = location.href.substr(0, location.href.lastIndexOf('/') + 1);
+    href = href.replace('/#/dashboard', '/api/v1/exams');
+    var baseUrl = href + getCookie('exam_in_progress').replace(/%22/g, '') + '/responses/' + getCookie('response_id').replace(/%22/g, '');
     // Firefox can record both audio/video in single webm container
     // Don't need to create multiple instances of the RecordRTC for Firefox
     // You can even use below property to force recording only audio blob on chrome
@@ -45,7 +44,7 @@
         parentNode.removeChild(videoElement);
         videoElement = document.createElement('audio');
         videoElement.style.padding = '.4em';
-        videoElement.controls = true;
+        videoElement.controls = false;
         parentNode.appendChild(videoElement);
     }
     </script>
@@ -74,24 +73,24 @@
         files.uploadOnlyAudio = !video;
         videoElement.src = '';
         videoElement.poster = '/ajax-loader.gif';
-        xhr(urlForNewQuestionUpload, JSON.stringify(files), function(_rxData) {
+        files.number = currentQuestionNumber + 1;
+        xhr(baseUrl + '/answers?session=' + getCookie('session').replace(/%22/g, ''), JSON.stringify(files), function(_rxData) {
+            currentQuestionNumber++;
+            if(currentQuestionNumber > questionCount) {
+                // TODO: Show the submit button
+                console.log("We are done with this exam!");
+            }
             var href = location.href.substr(0, location.href.lastIndexOf('/') + 1);
             href = href.replace('/#/dashboard', '/api/v1/exams');
-            videoElement.src = href + _rxData.exam_id + '/questions/' + _rxData.question_id + '/file?session=' + getCookie('session').replace(/%22/g, '');
+            videoElement.src = href + getCookie('exam_in_progress').replace(/%22/g, '') + '/responses/' + getCookie('response_id').replace(/%22/g, '') + '/currentQuestion?session=' + getCookie('session').replace(/%22/g, '');
             videoElement.play();
             videoElement.muted = false;
-            videoElement.controls = true;
+            videoElement.controls = false;
             var h2 = document.createElement('h2');
             h2.innerHTML = '<a href="' + videoElement.src + '">' + videoElement.src + '</a>';
             document.body.appendChild(h2);
         });
         if (mediaStream) mediaStream.stop();
-    }
-    // A utility method for getting the session
-    function getCookie(name) {
-        var value = "; " + document.cookie;
-        var parts = value.split("; " + name + "=");
-        if (parts.length == 2) return parts.pop().split(";").shift();
     }
     // XHR2/FormData
     function xhr(url, data, callback) {
@@ -100,15 +99,6 @@
             if (request.readyState == 4 && request.status == 200) {
                 callback(JSON.parse(request.responseText));
             }
-        };
-        request.upload.onprogress = function(event) {
-            progressBar.max = event.total;
-            progressBar.value = event.loaded;
-            progressBar.innerHTML = 'Upload Progress ' + Math.round(event.loaded / event.total * 100) + "%";
-        };
-        request.upload.onload = function() {
-            percentage.style.display = 'none';
-            progressBar.style.display = 'none';
         };
         request.open('POST', url);
         request.setRequestHeader("Content-type","application/json");
@@ -215,5 +205,12 @@
     window.onbeforeunload = function() {
         startRecording.disabled = false;
     };
+    var href = location.href.substr(0, location.href.lastIndexOf('/') + 1);
+    href = href.replace('/#/dashboard', '/api/v1/exams');
+    currentQuestionNumber++;
+    videoElement.src = href + getCookie('exam_in_progress').replace(/%22/g, '') + '/responses/' + getCookie('response_id').replace(/%22/g, '') + '/currentQuestion?session=' + getCookie('session').replace(/%22/g, '');
+    videoElement.play();
+    videoElement.muted = false;
+    videoElement.controls = false;
     </script>
 </div>

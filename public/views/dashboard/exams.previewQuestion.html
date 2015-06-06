@@ -2,6 +2,8 @@
 	<a ui-sref="list_exams" class="pull-right btn btn-primary btn-outline btn-rounded">Back to Overview</a>
 	<h2>Preview <small>Listen to the Questions</small></h2>
 	<div class="jumbotron">
+        <a ng-show="questions.length" ng-click="startExam()" class="btn btn-primary btn-outline btn-rounded">Start Exam</a>
+        <hr ng-show="questions.length" />
 		<div class="container">
             <div class="container" data-ng-init="init()">
             <ul class="list-group">
@@ -12,8 +14,10 @@
 		          </div>
                 </li>
                 <div ng-show="!questions.length" class="list-group-item">This Exam Doesn't Have any Quetions Yet</div>
-                <hr />
             </ul>
-            <video ng-show="showVideo" controls src={{questionSrc}} autoplay={{playVideo}} poster="/ajax-loader.gif"></video>
-	</div>
+	       </div>
+           <hr ng-show="questions.length" />
+           <video ng-show="showVideo" controls src={{questionSrc}} autoplay={{playVideo}} poster="/ajax-loader.gif"></video>
+        </div>
+    </div>
 </div>

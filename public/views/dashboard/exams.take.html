@@ -2,6 +2,8 @@
 	<a ui-sref="list_exams" class="pull-right btn btn-primary btn-outline btn-rounded">Back to Overview</a>
 	<h2>Exam in Progress <small>Follow the Instructions</small></h2>
 	<div class="jumbotron">
+        <button ng-click="cancelExam()" class="btn btn-primary btn-outline btn-rounded">Cancel Exam</button>
+        <hr />
 		<div class="container">
             <div>
                 <div ng-include="'views/dashboard/responseRecorder.html'"></div>

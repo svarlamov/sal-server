@@ -3,7 +3,6 @@ var config = require('../config');
 var fs = require('fs');
 var sys = require('sys');
 var exec = require('child_process').exec;
-//var busboy = require('connect-busboy');
 var router = express.Router({mergeParams : true});
 var Question = require('../models/question');
 var Exam = require('../models/exam');
@@ -33,6 +32,7 @@ router.get('/:question_id/file', function(req, res, next) {
     var questionId = req.params.question_id;
     var examId = req.params.exam_id;
     Question.findById(questionId, function(err, question) {
+        console.log(question._id)
         if(err) {
             console.error(err);
             res.send(err);
@@ -40,8 +40,8 @@ router.get('/:question_id/file', function(req, res, next) {
             res.sendFile(__dirname.replace('routes', '') + 'uploads/' + question.file);
         } else {
             res.status(400);
-            response.setHeader('Content-Type', 'application/json');
-            res.send({ ok: false, reason: 'Invalid Question or Exam Id'});
+            res.setHeader('Content-Type', 'application/json');
+            res.send({ ok: false, reason: 'Invalid Question or Exam Id' });
         }
     });
 });
@@ -57,7 +57,7 @@ function upload(response, files, examId) {
         var newQuestion = new Question({ file: audioPath });
         newQuestion.save();
         console.log(newQuestion._id);
-        newQuestion.pushToExam(newQuestion._id, examId)
+        newQuestion.pushAndNumber(newQuestion._id, examId)
         response.status(200);
         response.setHeader('Content-Type', 'application/json');
         response.send(newQuestion._id);
@@ -172,7 +172,7 @@ function ifMac(response, files, audioPath, videoPath, examId) {
             var newQuestion = new Question({ file: files.audio.name.split('.')[0] + '-merged.webm' });
             newQuestion.save();
             console.log(newQuestion._id);
-            newQuestion.pushToExam(newQuestion, examId);
+            newQuestion.pushAndNumber(newQuestion, examId);
             response.status(200);
             response.setHeader('Content-Type', 'application/json');
             response.send({ exam_id: examId, question_id: newQuestion._id });

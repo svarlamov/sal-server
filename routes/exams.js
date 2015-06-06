@@ -52,6 +52,19 @@ router.get('/:exam_id', function(req, res, next) {
     });
 });
 
+/* GET question count */
+router.get('/:exam_id/questionCount', function(req, res, next) {
+    Exam.findById(req.params.exam_id, function(err, exam) {
+        if(err) {
+            console.error(err);
+            res.send(err);
+        } else {
+            res.setHeader('Content-Type', 'application/json');
+            res.send(JSON.stringify({ count: exam.questions.length }));
+        }
+    });
+});
+
 /* DELETE an exam */
 router.delete('/:exam_id', function(req, res, next) {
     Exam.findByIdAndRemove(req.params.exam_id, function(err, exam) {

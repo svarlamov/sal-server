@@ -96,7 +96,7 @@ app.use('/api/v1/exams/:exam_id/questions', questions);
 // Responses
 app.use('/api/v1/exams/:exam_id/responses', responses);
 // Answers
-app.use('/api/v1/exams/:exam_id/responses/:response_id/answers', answers);
+app.use('/api/v1/exams/:exam_id/responses/:resp_id/answers', answers);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

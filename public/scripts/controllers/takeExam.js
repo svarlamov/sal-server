@@ -7,20 +7,19 @@
  * # NewExamCtrl
  * Controller to take exam
  */
+var questionCount = 10000
 angular.module('yapp')
   .controller('TakeExamCtrl', function($scope, $state, $cookieStore, $http, $location) {
-    $scope.loadExam = function() {
-        // If the cookie doesn't exist, then redirect back to the find exam screen
-        if(!$cookieStore.get('exam_in_progress')){
-            $location.path('/dashboard/exams.find');
-            return false;
-        }
+    $scope.submitExam = function() {
+        // TODO: Actually Submit the exam, and redirect
         $http({
-            url: 'http://localhost:3000/api/v1/exams/' + $scope.examId + '?session=' + $cookieStore.get('session'),
-            method: "GET",
+            url: 'http://localhost:3000/api/v1/exams/' + $cookieStore.get('exam_in_progress') + '/responses/' + $cookieStore.get('response_id') + '/submit?session=' + $cookieStore.get('session'),
+            method: "POST",
             headers: {'Content-Type': 'application/json'}
         }).success(function (data, status, headers, config) {
-            $scope.exam = data;
+            $cookieStore.remove('response_id');
+            $cookieStore.remove('exam_in_progress');
+            $location.path('/dashboard/exams.list');
         }).error(function (data, status, headers, config) {
             if(status == 401) {
                 $scope.authSuccess = false;
@@ -28,18 +27,37 @@ angular.module('yapp')
                 $location.path('/login');
             }
         });
-        return false;
     }
-    
-    $scope.submitExam = function() {
-        // TODO: Actually Submit the exam, and redirect
-        $cookieStore.remove('exam_in_progress');
-        $location.path('/dashboard');
-    }
-    
     $scope.cancelExam = function() {
-        // TODO: Actually cancel the exam, and redirect
-        $cookieStore.remove('exam_in_progress');
-        $location.path('/dashboard');
+        $http({
+            url: 'http://localhost:3000/api/v1/exams/' + $cookieStore.get('exam_in_progress') + '/responses/' + $cookieStore.get('response_id') + '?session=' + $cookieStore.get('session'),
+            method: "DELETE",
+            headers: {'Content-Type': 'application/json'}
+        }).success(function (data, status, headers, config) {
+            $cookieStore.remove('response_id');
+            $location.path('/dashboard/exams.previewQuestion');
+        }).error(function (data, status, headers, config) {
+            if(status == 401) {
+                $scope.authSuccess = false;
+                $cookieStore.put('session', 'null');
+                $location.path('/login');
+            }
+        });
     }
-  });
+    $scope.countQuestions = function() {
+        $http({
+            url: 'http://localhost:3000/api/v1/exams/' + $cookieStore.get('exam_in_progress') + '/questionCount?session=' + $cookieStore.get('session'),
+            method: "GET",
+            headers: {'Content-Type': 'application/json'}
+        }).success(function (data, status, headers, config) {
+            questionCount = data.count;
+        }).error(function (data, status, headers, config) {
+            if(status == 401) {
+                $scope.authSuccess = false;
+                $cookieStore.put('session', 'null');
+                $location.path('/login');
+            }
+        });
+    }
+    $scope.countQuestions();
+});
