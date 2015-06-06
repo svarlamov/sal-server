@@ -1,6 +1,8 @@
 var express = require('express');
 var router = express.Router();
 var Exam = require('../models/exam');
+var Response = require('../models/response');
+var User = require('../models/user');
 
 /* GET all of a user's exams */
 router.get('/', function(req, res, next) {
@@ -41,14 +43,24 @@ router.post('/', function(req, res, next) {
 
 /* GET an exam */
 router.get('/:exam_id', function(req, res, next) {
-    Exam.findById(req.params.exam_id, function(err, exam) {
-        if(err) {
-            console.error(err);
-            res.send(err);
-        } else {
-            res.setHeader('Content-Type', 'application/json');
-            res.send(JSON.stringify(exam));
-        }
+    Exam.findById(req.params.exam_id).lean().populate('questions responses').exec(function(err, exam) {
+        Response.populate(exam.responses, {
+            path: 'user',
+            select: 'email',
+            model: User // <== We are populating phones so we need to use the correct model, not User
+        }, function(err, populatedResps) {
+            if(err) {
+                console.error(err);
+                res.send(err);
+            } else {
+                console.log(populatedResps);
+                res.setHeader('Content-Type', 'application/json');
+                var newObj = exam;
+                newObj.responses = populatedResps;
+                res.send(JSON.stringify(newObj));
+            }
+        });
+        
     });
 });
 
