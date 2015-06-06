@@ -86,5 +86,11 @@ angular
           parent: 'dashboard',
           templateUrl: 'views/dashboard/exams.viewResponse.html',
           controller: 'ViewResponseCtrl'
+          })
+          .state('manage_question', {
+          url: '/exams.manageQuestion',
+          parent: 'dashboard',
+          templateUrl: 'views/dashboard/exams.manageQuestion.html',
+          controller: 'ManageQuestionCtrl'
           });
   });

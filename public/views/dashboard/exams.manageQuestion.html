@@ -1,0 +1,9 @@
+<div>
+	<a ui-sref="list_exams" class="pull-right btn btn-primary btn-outline btn-rounded">Back to Overview</a>
+	<h2>Question {{question.number}} <small>Edit/Delete</small></h2>
+	<div class="jumbotron">
+		<div class="container" data-ng-init="init()">
+           <video ng-show="showVideo" controls src={{questionSrc}} autoplay={{playVideo}} poster="/ajax-loader.gif"></video>
+        </div>
+    </div>
+</div>

@@ -10,22 +10,24 @@
 
 angular.module('yapp')
   .controller('ViewResponseCtrl', function($rootScope, $scope, $cookieStore, $location, $http) {
-    if(!$rootScope.examIdToLoad || !$rootScope.responseIdToLoad) {
+    if(!$rootScope.examIdToLoad || !$rootScope.responseToLoad) {
         $location.path('/dashboard/exams.view');
         return false;
     }
     $scope.viewAnswer = function(answer){
-        $scope.answerSrc = 'http://localhost:3000/api/v1/exams/' + $rootScope.examIdToLoad + '/responses/' + $rootScope.responseIdToLoad + '/answers/' + answer._id + '/file?session=' + $cookieStore.get('session');
+        $scope.answerSrc = 'http://localhost:3000/api/v1/exams/' + $rootScope.examIdToLoad + '/responses/' + $rootScope.responseToLoad._id + '/answers/' + answer._id + '/file?session=' + $cookieStore.get('session');
         $scope.playVideo = true;
         $scope.showControls = true;
         $scope.showVideo = true;
     }
     $scope.init = function() {
+        $scope.response = $rootScope.responseToLoad;
         $scope.showVideo = false;
         $scope.playVideo = false;
         $scope.showControls = false;
+        /*
         $http({
-            url: 'http://localhost:3000/api/v1/exams/' + $rootScope.examIdToLoad + '/responses/' + $rootScope.responseIdToLoad + '/answers?session=' + $cookieStore.get('session'),
+            url: 'http://localhost:3000/api/v1/exams/' + $rootScope.examIdToLoad + '/responses/' + $rootScope.responseToLoad._id + '/answers?session=' + $cookieStore.get('session'),
             method: "GET",
             headers: {'Content-Type': 'application/json'}
         }).success(function (data, status, headers, config) {
@@ -42,6 +44,7 @@ angular.module('yapp')
                 $location.path('/login');
             }
         });
+        */
         return false;
     }
   });

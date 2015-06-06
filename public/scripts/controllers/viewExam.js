@@ -30,9 +30,12 @@ angular.module('yapp')
         return false;
     }
     $scope.viewResponse = function(response) {
-        // TODO: Load the response and redirect
-        $rootScope.responseIdToLoad = response._id;
+        $rootScope.responseToLoad = response;
         $location.path('/dashboard/exams.viewResponse');
         return false;
+    }
+    $scope.manageQuestion = function(question) {
+        $rootScope.questionToLoad = question;
+        $location.path('/dashboard/exams.manageQuestion');
     }
   });

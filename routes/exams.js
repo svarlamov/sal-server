@@ -3,6 +3,7 @@ var router = express.Router();
 var Exam = require('../models/exam');
 var Response = require('../models/response');
 var User = require('../models/user');
+var Answer = require('../models/answer');
 
 /* GET all of a user's exams */
 router.get('/', function(req, res, next) {
@@ -47,17 +48,22 @@ router.get('/:exam_id', function(req, res, next) {
         Response.populate(exam.responses, {
             path: 'user',
             select: 'email',
-            model: User // <== We are populating phones so we need to use the correct model, not User
+            model: User
         }, function(err, populatedResps) {
             if(err) {
                 console.error(err);
                 res.send(err);
             } else {
-                console.log(populatedResps);
-                res.setHeader('Content-Type', 'application/json');
-                var newObj = exam;
-                newObj.responses = populatedResps;
-                res.send(JSON.stringify(newObj));
+                Response.populate(populatedResps, {
+                    path: 'answers',
+                    model: Answer
+                }, function(err, morePopulusResps) {
+                    console.log(morePopulusResps);
+                    res.setHeader('Content-Type', 'application/json');
+                    var newObj = exam;
+                    newObj.responses = morePopulusResps;
+                    res.send(JSON.stringify(newObj));
+                });
             }
         });
         

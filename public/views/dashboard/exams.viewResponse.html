@@ -1,20 +1,21 @@
 <div>
 	<a ui-sref="list_exams" class="pull-right btn btn-primary btn-outline btn-rounded">Back to Overview</a>
-	<h2>Listen <small>to the Response</small></h2>
+	<h2>Response</h2>
+    <h4>From: {{response.user.email}}</h4>
 	<div class="jumbotron">
 		<div class="container">
             <div class="container" data-ng-init="init()">
             <ul class="list-group">
-                <li ng-repeat="answer in answers" class="list-group-item">
+                <li ng-repeat="answer in response.answers" class="list-group-item">
                     <div class="container">
                         Answer to Question {{answer.number}}
-				    <button ng-click="viewAnswer(answer)" class="btn btn-primary btn-outline btn-rounded">View</button>
-		          </div>
+				        <button ng-click="viewAnswer(answer)" class="btn btn-primary btn-outline btn-rounded">View</button>
+		            </div>
                 </li>
-                <div ng-show="!answers.length" class="list-group-item">This Response Doesn't Have any Answers Yet</div>
+                <div ng-show="!response.answers.length" class="list-group-item">This Response Doesn't Have any Answers Yet</div>
             </ul>
 	       </div>
-           <hr ng-show="answers.length" />
+           <hr ng-show="response.answers.length" />
            <video ng-show="showVideo" controls src={{answerSrc}} autoplay={{playVideo}} poster="/ajax-loader.gif"></video>
         </div>
     </div>
