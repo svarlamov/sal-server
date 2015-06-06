@@ -31,7 +31,7 @@ angular.module('yapp')
     }
     $scope.viewResponse = function(response) {
         // TODO: Load the response and redirect
-        $rootScope.responseIdToLoad = response;
+        $rootScope.responseIdToLoad = response._id;
         $location.path('/dashboard/exams.viewResponse');
         return false;
     }
