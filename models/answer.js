@@ -1,4 +1,5 @@
 var mongoose = require('mongoose');
+vs fs = require('fs');
 var Schema = mongoose.Schema;
 
 var answerSchema = new Schema({
@@ -17,6 +18,11 @@ answerSchema.pre('save', function(next) {
     this.created_at = currentDate;
 
   next();
+});
+
+answerSchema.pre('remove', function(next) {
+    // Delete the file, because since the answer is gone the file is unreferenced
+    fs.unlink(__dirname.replace('models', '') + 'uploads/' + this.file);
 });
 
 var Answer = mongoose.model('Answer', answerSchema);
