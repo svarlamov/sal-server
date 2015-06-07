@@ -73,10 +73,10 @@ function upload(response, files, examId) {
         var newQuestion = new Question({ file: audioPath });
         newQuestion.save();
         console.log(newQuestion._id);
-        newQuestion.pushAndNumber(newQuestion._id, examId)
+        newQuestion.pushAndNumber(newQuestion, examId);
         response.status(200);
         response.setHeader('Content-Type', 'application/json');
-        response.send(newQuestion._id);
+        response.send({ exam_id: examId, question_id: newQuestion._id });
     }
 
     if (!files.uploadOnlyAudio) {
@@ -131,7 +131,7 @@ function hasMediaType(type) {
     
     return isHasMediaType;
 }
-
+/*
 function ifWin(response, files, audioPath, videoPath) {
     // following command tries to merge wav/webm files using ffmpeg
     var merger = __dirname + '\\merger.bat';
@@ -160,7 +160,7 @@ function ifWin(response, files, audioPath, videoPath) {
         }
     });
 }
-
+*/
 function ifMac(response, files, audioPath, videoPath, examId) {
     // its probably *nix, assume ffmpeg is available
     //var audioFile = __dirname + '/uploads/' + files.audio.name;
