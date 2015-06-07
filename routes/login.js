@@ -7,11 +7,9 @@ var Session = require('../models/session');
 router.post('/', function(req, res, next) {
     var email = req.body.email;
     var password = req.body.password;
-    if(req.currentUser) {
-        res.setHeader('Content-Type', 'application/json');
-        var authObj = { auth: true, session: req.sessionId };
-        res.send(JSON.stringify(authObj));
-        return;
+    if(!email || !password) {
+        res.status(401);
+        res.send(JSON.stringify({ auth: false, message: 'You must provide both an email and password in the body of the request' }));
     }
     User.findOne({ email: email }, 'email auth_provider', function(err, user) {
         if (err) {
