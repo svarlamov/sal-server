@@ -18,6 +18,11 @@ questionSchema.pre('save', function(next) {
   next();
 });
 
+questionSchema.pre('remove', function(next) {
+    // Delete the file, because since the question is gone the file is unreferenced
+    fs.unlink(__dirname.replace('models', '') + 'uploads/' + this.file);
+});
+
 questionSchema.methods.pushAndNumber = function(question, examId) {
     var Exam = require('./exam');
     Exam.findById(examId, function(err, exam) {
