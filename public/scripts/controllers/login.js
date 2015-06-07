@@ -11,8 +11,8 @@ angular.module('yapp')
     .controller('LoginCtrl', function($scope, $rootScope, $location, $http, $cookieStore) {
         $scope.loginRqd = false;
         $scope.testCookie = function() {
-            console.log("testCookie() got called");
             if(!$cookieStore.get('session')) {
+                $scope.loginRqd = true;
                 return false;
             }
             var postData = { session: $cookieStore.get('session') };
@@ -24,7 +24,6 @@ angular.module('yapp')
             }).success(function (data, status, headers, config) {
                 $scope.authSuccess = data.auth;
                 var sessionId = data.session;
-                console.log("Session = " + sessionId + " and the auth = " + $scope.authSuccess);
                 $cookieStore.put('session', sessionId);
                 $location.path('/dashboard');
             }).error(function (data, status, headers, config) {

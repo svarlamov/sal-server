@@ -49,10 +49,8 @@ app.use('/api/v1', function(req, res, next) {
             sessionId = req.params.session;
         }
         if(mongoose.Types.ObjectId.isValid(sessionId)){
-            console.log("sessionId = " + sessionId);
             Session.findById(sessionId).populate('user').exec(function(err, ses) {
                 if (ses) {
-                    console.log("user = " + ses.user + " and session = " + ses);
                     req['currentUser'] = ses.user;
                     req['sessionId'] = ses._id;
                     res.setHeader('Content-Type', 'application/json');
@@ -73,34 +71,17 @@ app.use('/api/v1', function(req, res, next) {
         if(!sessionId){
             sessionId = req.params.session;
         }
-        if(sessionId){
-            Session.findById(sessionId, function(err, ses) {
+        if(mongoose.Types.ObjectId.isValid(sessionId)){
+            Session.findById(sessionId).populate('user').exec(function(err, ses) {
                 if (err) {
                     console.error(err);
+                    res.status(500);
                     res.send(err);
                 } else if (ses) {
-                    // If we found a session
-                    if(ses) {
-                        User.findById(ses.user, function(err, user) {
-                            if (err) {
-                                console.error(err);
-                                res.send(err);
-                            } else if (user) {
-                                req['currentUser'] = user;
-                                req['sessionId'] = ses._id;
-                                console.log("The current user is, " + req.currentUser.email);
-                                next();
-                            } else {
-                                failObj = { auth: false, error: sessionId + " session is invalid" };
-                                res.status(401);
-                                res.send(failObj);
-                            }
-                        });
-                    } else {
-                        failObj = { auth: false, error: sessionId + " session is invalid" };
-                        res.status(401);
-                        res.send(failObj);
-                    }
+                    req['currentUser'] = ses.user;
+                    req['sessionId'] = ses._id;
+                    console.log("The current user is, " + req.currentUser.email);
+                    next();
                 } else {
                     failObj = { auth: false, error: sessionId + " session is invalid" };
                     res.status(401);
