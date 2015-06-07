@@ -1,7 +1,7 @@
 <div>
 	<a ui-sref="list_exams" class="pull-right btn btn-primary btn-outline btn-rounded">Back to Overview</a>
 	<h2>Exam in Progress <small>Follow the Instructions</small></h2>
-	<div class="jumbotron">
+	<div ng-init="init()" class="jumbotron">
         <button disabled="" id="examSubBtn"ng-click="submitExam()" class="btn btn-primary btn-outline btn-rounded">Submit</button>
         <button ng-click="cancelExam()" class="btn btn-primary btn-outline btn-rounded">Cancel</button>
         <hr />

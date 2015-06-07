@@ -10,7 +10,7 @@
 
 angular.module('yapp')
   .controller('PreviewQuestionCtrl', function($rootScope, $scope, $cookieStore, $location, $http) {
-    if(!$cookieStore.get('exam_in_progress')){
+    if(!$cookieStore.get('exam_in_progress') || !$cookieStore.get('session')){
         $location.path('/dashboard/exams.find');
         return false;
     }

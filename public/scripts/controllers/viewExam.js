@@ -9,6 +9,11 @@
  */
 angular.module('yapp')
   .controller('ViewExamCtrl', function($rootScope, $scope, $state, $cookieStore, $http, $location) {
+    $scope.init = function(){
+        if(!$cookieStore.get('session')) {
+            $location.path('/login');
+        }
+    }
     $scope.loadExam = function() {
         if(!$rootScope.examIdToLoad) {
             $location.path('/dashboard/exams.list');

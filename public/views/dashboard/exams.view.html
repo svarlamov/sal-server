@@ -1,7 +1,7 @@
 <div>
 	<a ui-sref="list_exams" class="pull-right btn btn-primary btn-outline btn-rounded">Back to Overview</a>
 	<h2>{{exam.name}} <small>{{exam._id}}</small></h2>
-	<div class="jumbotron">
+	<div ng-init="init()" class="jumbotron">
 		<div class="container" data-ng-init="loadExam()">
             <a ng-show="exam.questions.length" ui-sref="add_question" class="btn btn-primary btn-outline btn-rounded">Add a Question</a>
             <hr ng-show="exam.questions.length" />

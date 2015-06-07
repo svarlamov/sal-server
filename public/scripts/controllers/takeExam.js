@@ -10,6 +10,11 @@
 var questionCount = 10000
 angular.module('yapp')
   .controller('TakeExamCtrl', function($scope, $state, $cookieStore, $http, $location) {
+    $scope.init = function() {
+        if(!$cookieStore.get('session')) {
+            $location.path('/login');
+        }
+    }
     $scope.submitExam = function() {
         // TODO: Actually Submit the exam, and redirect
         $http({

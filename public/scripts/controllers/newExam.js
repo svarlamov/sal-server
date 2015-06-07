@@ -9,6 +9,11 @@
  */
 angular.module('yapp')
   .controller('NewExamCtrl', function($scope, $state, $cookieStore, $http, $location) {
+    $scope.init = function() {
+        if(!$cookieStore.get('session')) {
+            $location.path('/login');
+        }
+    }
     $scope.submit = function() {
             var postData = { session: $cookieStore.get('session'), name: $scope.exam.name }
             $http({
