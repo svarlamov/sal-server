@@ -12,6 +12,10 @@ angular.module('yapp')
   .controller('ListExamCtrl', function($rootScope, $scope, $state, $cookieStore, $http, $location, $route) {
     $scope.submit = function() { $scope.init(); }
     $scope.init = function() {
+        if(!$cookieStore.get('session')) {
+            $location.path('/login');
+            return;
+        }
         $http({
             url: 'http://localhost:3000/api/v1/exams?session=' + $cookieStore.get('session'),
             method: "GET",

@@ -10,6 +10,7 @@ router.post('/', function(req, res, next) {
     if(!email || !password) {
         res.status(401);
         res.send(JSON.stringify({ auth: false, message: 'You must provide both an email and password in the body of the request' }));
+        return;
     }
     User.findOne({ email: email }, 'email auth_provider', function(err, user) {
         if (err) {
