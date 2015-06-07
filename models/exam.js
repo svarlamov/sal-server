@@ -1,6 +1,7 @@
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 var Question = require('./question');
+var Response = require('./response');
 
 var examSchema = new Schema({
     name: String,
@@ -19,6 +20,32 @@ examSchema.pre('save', function(next) {
 
     if (!this.created_at)
         this.created_at = currentDate;
+    next();
+});
+
+examSchema.pre('remove', function(next) {
+    this.questions.forEach(function(questionId, index) {
+        Question.findById(questionId, function(err, question) {
+            if(err) {
+                // TODO: Do something with the error. This is a weird place to have one...
+                console.error(err);
+            } else {
+                question.remove();
+            }
+        });
+    });
+    
+    this.responses.forEach(function(responseId, index) {
+        Response.findById(responseId, function(err, response) {
+            if(err) {
+                // TODO: Do something with the error. This is a weird place to have one...
+                console.error(err);
+            } else {
+                response.remove();
+            }
+        });
+    });
+    
     next();
 });
 
