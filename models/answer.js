@@ -1,5 +1,5 @@
 var mongoose = require('mongoose');
-vs fs = require('fs');
+var fs = require('fs');
 var Schema = mongoose.Schema;
 
 var answerSchema = new Schema({
@@ -22,7 +22,16 @@ answerSchema.pre('save', function(next) {
 
 answerSchema.pre('remove', function(next) {
     // Delete the file, because since the answer is gone the file is unreferenced
-    fs.unlink(__dirname.replace('models', '') + 'uploads/' + this.file);
+    var p = __dirname.replace('models', '') + 'uploads/' + this.file;
+    fs.exists(p, function(exists) {
+        if(exists) {
+            fs.unlink(p);
+            console.log("File with path, " + __dirname.replace('models', '') + 'uploads/' + this.file + ", has been removed");
+            next();
+        } else {
+            next();
+        }
+    });
 });
 
 var Answer = mongoose.model('Answer', answerSchema);

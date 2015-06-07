@@ -50,12 +50,12 @@ router.get('/:question_id/file', function(req, res, next) {
 router.delete('/:question_id', function(req, res, next) {
     var questionId = req.params.question_id;
     var examId = req.params.exam_id;
-    Question.findByIdAndRemove(questionId, function(err, question) {
-        console.log(question._id)
+    Question.findById(questionId, function(err, question) {
         if(err) {
             console.error(err);
             res.send(err);
         } else {
+            question.remove();
             res.setHeader('Content-Type', 'application/json');
             res.send({ success: true });
         }

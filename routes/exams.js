@@ -85,11 +85,12 @@ router.get('/:exam_id/questionCount', function(req, res, next) {
 
 /* DELETE an exam */
 router.delete('/:exam_id', function(req, res, next) {
-    Exam.findByIdAndRemove(req.params.exam_id, function(err, exam) {
+    Exam.findById(req.params.exam_id, function(err, exam) {
         if(err) {
             console.error(err);
             res.send(err);
         } else {
+            exam.remove();
             res.setHeader('Content-Type', 'application/json');
             res.send(JSON.stringify({ deleted: true }));
         }

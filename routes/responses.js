@@ -69,8 +69,12 @@ router.delete('/:resp_id', function(req, res, next) {
         }
         exam.responses.forEach(function(respId, index) {
             if(respId == req.params.resp_id){
-                Response.findByIdAndRemove(respId, function(err, response) {
-                    if (err) console.error(err);
+                Response.findById(respId, function(err, response) {
+                    if (err) {
+                        console.error(err);
+                        res.send(err);
+                    }
+                    response.remove();
                     res.setHeader('Content-Type', 'application/json');
                     res.send(JSON.stringify({ success: true }));
                 });
