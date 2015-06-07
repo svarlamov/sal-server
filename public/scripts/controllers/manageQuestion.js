@@ -10,7 +10,7 @@
 
 angular.module('yapp')
   .controller('ManageQuestionCtrl', function($rootScope, $scope, $cookieStore, $location, $http) {
-    if(!$rootScope.examIdToLoad || !$rootScope.questionToLoad) {
+    if(!$rootScope.examIdToLoad || !$rootScope.questionToLoad || !$cookieStore.get('session')) {
         $location.path('/dashboard/exams.view');
         return false;
     }

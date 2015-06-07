@@ -9,6 +9,11 @@
  */
 angular.module('yapp')
   .controller('FindExamCtrl', function($scope, $state, $cookieStore, $http, $location) {
+    $scope.init = function() {
+        if(!$cookieStore.get('session')) {
+            $location.path('/login');
+        }
+    }
     $scope.startExam = function(examCode) {
         $http({
             url: 'http://localhost:3000/api/v1/exams/' + examCode + '?session=' + $cookieStore.get('session'),
