@@ -16,7 +16,8 @@ var exams = require('./routes/exams');
 var responses = require('./routes/responses');
 var questions = require('./routes/questions');
 var answers = require('./routes/answers');
-var loginCtrlr = require('./routes/login')
+var loginCtrlr = require('./routes/login');
+var logoutCtrlr = require('./routes/logout');
 
 var app = express();
 mongoose.connection.on('error', function(err) {
@@ -108,6 +109,8 @@ app.use('/api/v1/exams/:exam_id/questions', questions);
 app.use('/api/v1/exams/:exam_id/responses', responses);
 // Answers
 app.use('/api/v1/exams/:exam_id/responses/:resp_id/answers', answers);
+// API Logout
+app.use('/api/v1/logout', logoutCtrlr);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

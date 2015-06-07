@@ -3,7 +3,7 @@ var router = express.Router();
 var User = require('../models/user');
 var Session = require('../models/session');
 
-/* GET all questions for the exam */
+/* POST log the user in */
 router.post('/', function(req, res, next) {
     var email = req.body.email;
     var password = req.body.password;

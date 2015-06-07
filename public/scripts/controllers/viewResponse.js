@@ -14,7 +14,7 @@ angular.module('yapp')
         $location.path('/dashboard/exams.view');
         return false;
     }
-    $scope.viewAnswer = function(answer){
+    $scope.viewAnswer = function(answer) {
         $scope.answerSrc = 'http://localhost:3000/api/v1/exams/' + $rootScope.examIdToLoad + '/responses/' + $rootScope.responseToLoad._id + '/answers/' + answer._id + '/file?session=' + $cookieStore.get('session');
         $scope.playVideo = true;
         $scope.showControls = true;
