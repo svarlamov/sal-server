@@ -14,8 +14,7 @@ angular
     'ui.router',
     'ngAnimate',
     'ngCookies',
-    'ngRoute',
-    'webcam'
+    'ngRoute'
   ])
   .constant('appDomain', 'http://localhost:3000/')
   .config(function($stateProvider, $urlRouterProvider) {

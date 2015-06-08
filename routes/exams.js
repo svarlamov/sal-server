@@ -6,7 +6,9 @@ var User = require('../models/user');
 var Answer = require('../models/answer');
 
 /* GET all of a user's exams */
-router.get('/', function(req, res, next) {
+router.get('/', getAllExamsForUser);
+           
+function getAllExamsForUser(req, res, next) {
     Exam.find({ user: req.currentUser._id }, '_id name created_at', function(err, exams) {
         if(err) {
             console.error(err);
@@ -21,7 +23,7 @@ router.get('/', function(req, res, next) {
             }
         }
     });
-});
+}
 
 /* POST creates a new exam */
 router.post('/', function(req, res, next) {
