@@ -1,19 +1,13 @@
 <div>
 	<a ui-sref="list_exams" class="pull-right btn btn-primary btn-outline btn-rounded">Back to Overview</a>
-	<h2>Exams <small>View Your Exams</small></h2>
+	<h2>Exams <small>List View</small></h2>
 	<div class="jumbotron">
 		<div class="container" data-ng-init="init()">
+            <h4 ng-show="exams.length > 0">My Exams</h4>
             <ul class="list-group">
                 <li ng-repeat="exam in exams" class="list-group-item">
-                    <div class="container">
-			         <form role="form">
-				        <div class="form-content">
-					       <div class="form-group">
-                            {{exam.name}}<input type="hidden" ng-model="exam._id" id="" value={{exam._id}}>
-					       </div>
-				        </div>
-				        <button type="submit" ng-click="goToExam(exam)" class="pull-left btn btn-primary btn-outline btn-rounded">View</button>
-			         </form>
+                  <div class="container">
+				    <button ng-click="goToExam(exam)" class="list-group-item">{{exam.name}}</button>
 		          </div>
                 </li>
                 <button ui-sref="create_exam" ng-show="!exams.length" class="btn btn-primary btn-outline btn-rounded">Create Your First Exam</button>
