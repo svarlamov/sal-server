@@ -8,7 +8,7 @@
  * Controller of yapp
  */
 angular.module('yapp')
-    .controller('LoginCtrl', function($scope, $rootScope, $location, $http, $cookieStore) {
+    .controller('LoginCtrl', function($scope, $rootScope, $location, $http, $cookieStore, appDomain) {
         $scope.loginRqd = false;
         $scope.testCookie = function() {
             if(!$cookieStore.get('session')) {
@@ -17,7 +17,7 @@ angular.module('yapp')
             }
             var postData = { session: $cookieStore.get('session') };
             $http({
-                url: 'http://localhost:3000/api/v1/login',
+                url: appDomain + 'api/v1/login',
                 method: "POST",
                 data: JSON.stringify(postData),
                 headers: {'Content-Type': 'application/json'}
@@ -36,7 +36,7 @@ angular.module('yapp')
         $scope.submit = function() {
             var postData = { email: $scope.user.email, password: $scope.user.password }
             $http({
-                url: 'http://localhost:3000/api/v1/login',
+                url: appDomain + 'api/v1/login',
                 method: "POST",
                 data: JSON.stringify(postData),
                 headers: {'Content-Type': 'application/json'}

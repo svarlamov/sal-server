@@ -9,13 +9,13 @@
  */
 
 angular.module('yapp')
-  .controller('PreviewQuestionCtrl', function($rootScope, $scope, $cookieStore, $location, $http) {
+  .controller('PreviewQuestionCtrl', function($rootScope, $scope, $cookieStore, $location, $http, appDomain) {
     if(!$cookieStore.get('exam_in_progress') || !$cookieStore.get('session')){
         $location.path('/dashboard/exams.find');
         return false;
     }
     $scope.previewQuestion = function(question){
-        $scope.questionSrc = 'http://localhost:3000/api/v1/exams/' + $cookieStore.get('exam_in_progress') + '/questions/' + question._id + '/file?session=' + $cookieStore.get('session');
+        $scope.questionSrc = appDomain + 'api/v1/exams/' + $cookieStore.get('exam_in_progress') + '/questions/' + question._id + '/file?session=' + $cookieStore.get('session');
         $scope.playVideo = true;
         $scope.showControls = false;
         $scope.showVideo = true;
@@ -25,7 +25,7 @@ angular.module('yapp')
         $scope.playVideo = false;
         $scope.showControls = false;
         $http({
-            url: 'http://localhost:3000/api/v1/exams/' + $cookieStore.get('exam_in_progress') + '/questions?session=' + $cookieStore.get('session'),
+            url: appDomain + 'api/v1/exams/' + $cookieStore.get('exam_in_progress') + '/questions?session=' + $cookieStore.get('session'),
             method: "GET",
             headers: {'Content-Type': 'application/json'}
         }).success(function (data, status, headers, config) {
@@ -45,7 +45,7 @@ angular.module('yapp')
     }
     $scope.startExam = function() {
         $http({
-            url: 'http://localhost:3000/api/v1/exams/' + $cookieStore.get('exam_in_progress') + '/responses/?session=' + $cookieStore.get('session'),
+            url: appDomain + 'api/v1/exams/' + $cookieStore.get('exam_in_progress') + '/responses/?session=' + $cookieStore.get('session'),
             method: "POST",
             headers: {'Content-Type': 'application/json'}
         }).success(function (data, status, headers, config) {

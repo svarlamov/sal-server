@@ -9,13 +9,13 @@
  */
 
 angular.module('yapp')
-  .controller('ViewResponseCtrl', function($rootScope, $scope, $cookieStore, $location, $http) {
+  .controller('ViewResponseCtrl', function($rootScope, $scope, $cookieStore, $location, $http, appDomain) {
     if(!$rootScope.examIdToLoad || !$rootScope.responseToLoad || !$cookieStore.get('session')) {
         $location.path('/dashboard/exams.view');
         return false;
     }
     $scope.viewAnswer = function(answer) {
-        $scope.answerSrc = 'http://localhost:3000/api/v1/exams/' + $rootScope.examIdToLoad + '/responses/' + $rootScope.responseToLoad._id + '/answers/' + answer._id + '/file?session=' + $cookieStore.get('session');
+        $scope.answerSrc = appDomain + 'api/v1/exams/' + $rootScope.examIdToLoad + '/responses/' + $rootScope.responseToLoad._id + '/answers/' + answer._id + '/file?session=' + $cookieStore.get('session');
         $scope.playVideo = true;
         $scope.showControls = true;
         $scope.showVideo = true;
@@ -27,7 +27,7 @@ angular.module('yapp')
         $scope.showControls = false;
         /*
         $http({
-            url: 'http://localhost:3000/api/v1/exams/' + $rootScope.examIdToLoad + '/responses/' + $rootScope.responseToLoad._id + '/answers?session=' + $cookieStore.get('session'),
+            url: appDomain + 'api/v1/exams/' + $rootScope.examIdToLoad + '/responses/' + $rootScope.responseToLoad._id + '/answers?session=' + $cookieStore.get('session'),
             method: "GET",
             headers: {'Content-Type': 'application/json'}
         }).success(function (data, status, headers, config) {

@@ -1,5 +1,6 @@
 'use strict';
 
+
 /**
  * @ngdoc overview
  * @name yapp
@@ -16,6 +17,7 @@ angular
     'ngRoute',
     'webcam'
   ])
+  .constant('appDomain', 'http://localhost:3000/')
   .config(function($stateProvider, $urlRouterProvider) {
 
     $urlRouterProvider.when('/dashboard', '/dashboard/exams.list');

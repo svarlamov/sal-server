@@ -8,13 +8,13 @@
  * Controller of yapp
  */
 angular.module('yapp')
-  .controller('DashboardCtrl', function($scope, $rootScope, $state, $location, $cookieStore, $http) {
+  .controller('DashboardCtrl', function($scope, $rootScope, $state, $location, $cookieStore, $http, appDomain) {
     $scope.$state = $state;
     $scope.logout = function(){
         if($cookieStore.get('session')) {
             var postData = { session: $cookieStore.get('session') };
             $http({
-                url: 'http://localhost:3000/api/v1/logout',
+                url: appDomain + 'api/v1/logout',
                 method: "POST",
                 data: JSON.stringify(postData),
                 headers: {'Content-Type': 'application/json'}

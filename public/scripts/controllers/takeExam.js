@@ -9,7 +9,7 @@
  */
 var questionCount = 10000
 angular.module('yapp')
-  .controller('TakeExamCtrl', function($scope, $state, $cookieStore, $http, $location) {
+  .controller('TakeExamCtrl', function($scope, $state, $cookieStore, $http, $location, appDomain) {
     $scope.init = function() {
         if(!$cookieStore.get('session')) {
             $location.path('/login');
@@ -18,7 +18,7 @@ angular.module('yapp')
     $scope.submitExam = function() {
         // TODO: Actually Submit the exam, and redirect
         $http({
-            url: 'http://localhost:3000/api/v1/exams/' + $cookieStore.get('exam_in_progress') + '/responses/' + $cookieStore.get('response_id') + '/submit?session=' + $cookieStore.get('session'),
+            url: appDomain + 'api/v1/exams/' + $cookieStore.get('exam_in_progress') + '/responses/' + $cookieStore.get('response_id') + '/submit?session=' + $cookieStore.get('session'),
             method: "POST",
             headers: {'Content-Type': 'application/json'}
         }).success(function (data, status, headers, config) {
@@ -35,7 +35,7 @@ angular.module('yapp')
     }
     $scope.cancelExam = function() {
         $http({
-            url: 'http://localhost:3000/api/v1/exams/' + $cookieStore.get('exam_in_progress') + '/responses/' + $cookieStore.get('response_id') + '?session=' + $cookieStore.get('session'),
+            url: appDomain + 'api/v1/exams/' + $cookieStore.get('exam_in_progress') + '/responses/' + $cookieStore.get('response_id') + '?session=' + $cookieStore.get('session'),
             method: "DELETE",
             headers: {'Content-Type': 'application/json'}
         }).success(function (data, status, headers, config) {
@@ -51,7 +51,7 @@ angular.module('yapp')
     }
     $scope.countQuestions = function() {
         $http({
-            url: 'http://localhost:3000/api/v1/exams/' + $cookieStore.get('exam_in_progress') + '/questionCount?session=' + $cookieStore.get('session'),
+            url: appDomain + 'api/v1/exams/' + $cookieStore.get('exam_in_progress') + '/questionCount?session=' + $cookieStore.get('session'),
             method: "GET",
             headers: {'Content-Type': 'application/json'}
         }).success(function (data, status, headers, config) {

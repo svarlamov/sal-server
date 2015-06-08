@@ -8,7 +8,7 @@
  * Controller to find an exam to take
  */
 angular.module('yapp')
-  .controller('FindExamCtrl', function($scope, $state, $cookieStore, $http, $location) {
+  .controller('FindExamCtrl', function($scope, $state, $cookieStore, $http, $location, appDomain) {
     $scope.init = function() {
         if(!$cookieStore.get('session')) {
             $location.path('/login');
@@ -16,7 +16,7 @@ angular.module('yapp')
     }
     $scope.startExam = function(examCode) {
         $http({
-            url: 'http://localhost:3000/api/v1/exams/' + examCode + '?session=' + $cookieStore.get('session'),
+            url: appDomain + 'api/v1/exams/' + examCode + '?session=' + $cookieStore.get('session'),
             method: "GET",
             headers: {'Content-Type': 'application/json'}
         }).success(function (data, status, headers, config) {

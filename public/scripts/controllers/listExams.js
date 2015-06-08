@@ -9,7 +9,7 @@
  */
 
 angular.module('yapp')
-  .controller('ListExamCtrl', function($rootScope, $scope, $state, $cookieStore, $http, $location, $route) {
+  .controller('ListExamCtrl', function($rootScope, $scope, $state, $cookieStore, $http, $location, $route, appDomain) {
     $scope.submit = function() { $scope.init(); }
     $scope.init = function() {
         if(!$cookieStore.get('session')) {
@@ -17,7 +17,7 @@ angular.module('yapp')
             return;
         }
         $http({
-            url: 'http://localhost:3000/api/v1/exams?session=' + $cookieStore.get('session'),
+            url: appDomain + 'api/v1/exams?session=' + $cookieStore.get('session'),
             method: "GET",
             headers: {'Content-Type': 'application/json'}
         }).success(function (data, status, headers, config) {
@@ -38,7 +38,7 @@ angular.module('yapp')
     }
     $scope.deleteExam = function(exam) {
         $http({
-            url: 'http://localhost:3000/api/v1/exams/' + exam._id + '?session=' + $cookieStore.get('session'),
+            url: appDomain + 'api/v1/exams/' + exam._id + '?session=' + $cookieStore.get('session'),
             method: "DELETE",
             headers: {'Content-Type': 'application/json'}
         }).success(function (data, status, headers, config) {

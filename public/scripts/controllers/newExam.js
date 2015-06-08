@@ -8,7 +8,7 @@
  * Controller to create new exams
  */
 angular.module('yapp')
-  .controller('NewExamCtrl', function($scope, $state, $cookieStore, $http, $location) {
+  .controller('NewExamCtrl', function($scope, $state, $cookieStore, $http, $location, appDomain) {
     $scope.init = function() {
         if(!$cookieStore.get('session')) {
             $location.path('/login');
@@ -17,7 +17,7 @@ angular.module('yapp')
     $scope.submit = function() {
             var postData = { session: $cookieStore.get('session'), name: $scope.exam.name }
             $http({
-                url: 'http://localhost:3000/api/v1/exams',
+                url: appDomain + 'api/v1/exams',
                 method: "POST",
                 data: JSON.stringify(postData),
                 headers: {'Content-Type': 'application/json'}
