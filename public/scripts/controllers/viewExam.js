@@ -34,6 +34,22 @@ angular.module('yapp')
         });
         return false;
     }
+    $scope.deleteExam = function() {
+        $http({
+            url: appDomain + 'api/v1/exams/' + $rootScope.examIdToLoad + '?session=' + $cookieStore.get('session'),
+            method: "DELETE",
+            headers: {'Content-Type': 'application/json'}
+        }).success(function (data, status, headers, config) {
+            // TODO: Let the user know that the exam has been deleted
+            $location.path('/dashboard/exams.list');
+        }).error(function (data, status, headers, config) {
+            if(status == 401) {
+                $scope.authSuccess = false;
+                $cookieStore.put('session', 'null');
+                $location.path('/login');
+            }
+        });
+    }
     $scope.viewResponse = function(response) {
         $rootScope.responseToLoad = response;
         $location.path('/dashboard/exams.viewResponse');
