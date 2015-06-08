@@ -8,12 +8,6 @@
             <h4>Responses</h4>
             <ul class="list-group">
                 <li ng-repeat="response in exam.responses" class="list-group-item">
-                    <!---
-                    <div class="container">
-                        {{response.user.email}}
-				        <button ng-click="viewResponse(response)" class="btn btn-primary btn-outline btn-rounded">View</button>
-		            </div>
-                    -->
                     <button class="list-group-item" ng-click="viewResponse(response)">{{response.user.email}}</button>
                 </li>
                 <div ng-show="!exam.responses.length" class="list-group-item">This Exam Doesn't Have any Responses Yet</div>
@@ -22,12 +16,6 @@
             <h4>Questions</h4>
             <ul class="list-group">
                 <li ng-repeat="question in exam.questions" class="list-group-item">
-                    <!--
-                    <div class="container">
-                        Question {{question.number}}
-				        <button ng-click="viewQuestion(question)" class="btn btn-primary btn-outline btn-rounded">View</button>
-		            </div>
-                    -->
                     <button class="list-group-item" ng-click="manageQuestion(question)">Question {{question.number}}</button>
                 </li>
                 <a ng-show="!exam.questions.length" ui-sref="add_question" class="btn btn-primary btn-outline btn-rounded">Add your First Question</a>
