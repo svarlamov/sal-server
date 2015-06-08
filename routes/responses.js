@@ -1,6 +1,5 @@
 var express = require('express');
 var fs = require('fs');
-var busboy = require('connect-busboy');
 var router = express.Router({mergeParams : true});
 var Exam = require('../models/exam');
 var Response = require('../models/response');
