@@ -9,13 +9,14 @@ Speak and Listen is a comprehensive language assessment system that provides edu
 5.  MongoDB
 
 # Installing
-1.  To install the Speak and Listen server on your box you must first ensure that you meet all of the prerequisites outlined in the 'System Requirements' section. Once you are certain that the server will function on your machine, follow the next few steps to get yourself up and running.
-2.  Edit the MongoDB server domain in the `app.js` file to point to your MongoDB instance. This would also be the time to setup any other MongoDB settings that are specific to your installation, such as user accounts and passwords.
-3.  (Optional) Edit the `config.js` if you would like to use Amazon S3 file hosting to host user media.
-4.  (Optional) Further edit the `app.js` if you would like to change the ports, IP's, etc.
-5.  Open up terminal and `cd` into the installation directory, ie., `~/MyFiles/sal`
-6.  Execute `npm install`
-7.  Execute `bower install`
+1.  To install the Speak and Listen server on your box you must first gensure that you meet all of the prerequisites outlined in the 'System Requirements' section. Once you are certain that the server will function on your machine, follow the next few steps to get yourself up and running.
+2.  Create a config.js of your own based on the config.default.js provided in the repository
+3.  Edit the MongoDB server domain in the `app.js` file to point to your MongoDB instance. This would also be the time to setup any other MongoDB settings that are specific to your installation, such as user accounts and passwords.
+4.  (Optional) Edit the `config.js` if you would like to use Amazon S3 file hosting to host user media.
+5.  (Optional) Further edit the `app.js` if you would like to change the ports, IP's, etc.
+6.  Open up terminal and `cd` into the installation directory, ie., `~/MyFiles/sal`
+7.  Execute `npm install`
+8.  Execute `bower install`
 
 # Running
 ### In Debug
