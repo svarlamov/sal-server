@@ -7,6 +7,7 @@ Speak and Listen is a comprehensive language assessment system that provides edu
 3.  `npm` Installed globally ie., you can use, `npm install ______` from the terminal whilst in any directory
 4.  `bower` Installed globally ie., you can use, `bower install ______` from the terminal whilst in any directory
 5.  MongoDB
+6.  FFMPEG
 
 # Installing
 1.  To install the Speak and Listen server on your box you must first gensure that you meet all of the prerequisites outlined in the 'System Requirements' section. Once you are certain that the server will function on your machine, follow the next few steps to get yourself up and running.
