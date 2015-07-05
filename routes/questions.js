@@ -1,5 +1,6 @@
 var express = require('express');
 var config = require('../config');
+var useS3 = config.s3_enabled;
 var fs = require('fs');
 var sys = require('sys');
 var exec = require('child_process').exec;
@@ -70,13 +71,11 @@ function upload(response, files, examId) {
     audioPath = _upload(response, files.audio);
 
     if (files.uploadOnlyAudio) {
-        var newQuestion = new Question({ file: audioPath });
+        var newQuestion = new Question({ file: audioPath, s3: useS3 });
         newQuestion.save();
         console.log(newQuestion._id);
         newQuestion.pushAndNumber(newQuestion, examId);
-        response.status(200);
-        response.setHeader('Content-Type', 'application/json');
-        response.send({ exam_id: examId, question_id: newQuestion._id });
+        response.json({ exam_id: examId, question_id: newQuestion._id });
     }
 
     if (!files.uploadOnlyAudio) {
@@ -119,7 +118,7 @@ function _upload(response, file) {
     console.log(filePath);
 
     fs.writeFileSync(filePath, fileBuffer);
-    
+
     return filePath;
 }
 
@@ -128,7 +127,7 @@ function hasMediaType(type) {
     ['audio/wav', 'audio/ogg', 'video/webm', 'video/mp4'].forEach(function(t) {
       if(t== type) isHasMediaType = true;
     });
-    
+
     return isHasMediaType;
 }
 /*
@@ -170,7 +169,7 @@ function ifMac(response, files, audioPath, videoPath, examId) {
     var audioFile = actualDirname + '/uploads/' + files.audio.name;
     var videoFile = actualDirname + '/uploads/' + files.video.name;
     var mergedFile = actualDirname + '/uploads/' + files.audio.name.split('.')[0] + '-merged.webm';
-    
+
     var util = require('util'),
         exec = require('child_process').exec;
 
@@ -182,16 +181,14 @@ function ifMac(response, files, audioPath, videoPath, examId) {
 
         if (error) {
             console.log('exec error: ' + error);
-            response.status(404);
+            response.status(500);
             response.send();
         } else {
-            var newQuestion = new Question({ file: files.audio.name.split('.')[0] + '-merged.webm' });
+            var newQuestion = new Question({ file: files.audio.name.split('.')[0] + '-merged.webm', s3: useS3 });
             newQuestion.save();
             console.log(newQuestion._id);
             newQuestion.pushAndNumber(newQuestion, examId);
-            response.status(200);
-            response.setHeader('Content-Type', 'application/json');
-            response.send({ exam_id: examId, question_id: newQuestion._id });
+            response.json({ exam_id: examId, question_id: newQuestion._id });
             // removing audio/video files
             fs.unlink(audioFile);
             fs.unlink(videoFile);

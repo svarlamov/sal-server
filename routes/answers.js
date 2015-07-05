@@ -1,5 +1,6 @@
 var express = require('express');
 var config = require('../config');
+var useS3 = config.s3_enabled;
 var fs = require('fs');
 var sys = require('sys');
 var exec = require('child_process').exec;
@@ -116,7 +117,7 @@ function upload(response, files, resp) {
     audioPath = _upload(response, files.audio);
 
     if (files.uploadOnlyAudio) {
-        var newAnswer = new Answer({ file: audioPath, number: resp.onNumber});
+        var newAnswer = new Answer({ file: audioPath, number: resp.onNumber, s3: useS3 });
         newAnswer.save();
         console.log(newAnswer._id);
         resp.answers.push(newAnswer._id);
@@ -166,16 +167,16 @@ function _upload(response, file) {
     console.log(filePath);
 
     fs.writeFileSync(filePath, fileBuffer);
-    
+
     return filePath;
 }
 
 function hasMediaType(type) {
     var isHasMediaType = false;
     ['audio/wav', 'audio/ogg', 'video/webm', 'video/mp4'].forEach(function(t) {
-      if(t== type) isHasMediaType = true;
+      if(t == type) isHasMediaType = true;
     });
-    
+
     return isHasMediaType;
 }
 /*
@@ -217,7 +218,7 @@ function ifMac(response, files, audioPath, videoPath, resp) {
     var audioFile = actualDirname + '/uploads/' + files.audio.name;
     var videoFile = actualDirname + '/uploads/' + files.video.name;
     var mergedFile = actualDirname + '/uploads/' + files.audio.name.split('.')[0] + '-merged.webm';
-    
+
     var util = require('util'),
         exec = require('child_process').exec;
 
@@ -229,17 +230,15 @@ function ifMac(response, files, audioPath, videoPath, resp) {
 
         if (error) {
             console.log('exec error: ' + error);
-            response.status(404);
+            response.status(500);
             response.send();
         } else {
-            var newAnswer = new Answer({ file: files.audio.name.split('.')[0] + '-merged.webm', number: resp.onNumber });
+            var newAnswer = new Answer({ file: files.audio.name.split('.')[0] + '-merged.webm', number: resp.onNumber, s3: useS3 });
             newAnswer.save();
             console.log(newAnswer._id);
             resp.answers.push(newAnswer._id);
             resp.save();
-            response.status(200);
-            response.setHeader('Content-Type', 'application/json');
-            response.send({ resp_id: response._id, answer_id: newAnswer._id });
+            response.json({ resp_id: response._id, answer_id: newAnswer._id });
             // removing audio/video files
             fs.unlink(audioFile);
             fs.unlink(videoFile);

@@ -5,12 +5,15 @@ var Exam = require('./exam');
 
 var questionSchema = new Schema({
   number: { type: Number, required: true },
-  file: { type: String, required: true }
+  file: { type: String, required: true },
+  s3: { type: Boolean, required: true },
+  created_at: Date,
+  updated_at: Date
 });
 
 questionSchema.pre('save', function(next) {
   var currentDate = new Date();
-  
+
   this.updated_at = currentDate;
 
   if (!this.created_at)
