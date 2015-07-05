@@ -18,4 +18,6 @@ bower_components
 uploads
 npm-debug.log
 
+.DS_Store
+
 config.js
