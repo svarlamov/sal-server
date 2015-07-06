@@ -103,11 +103,15 @@ router.get('/:answer_id/file', function(req, res, next) {
                                     console.error(err);
                                     res.send(err);
                                 } else if(answer) {
+                                  if(answer.s3){
+                                    // TODO: redir to aws signed url for file
+                                    res.redirect('https://' + BUCKET_NAME + '.s3.amazonaws.com/' + answer.file);
+                                  } else {
                                     res.sendFile(__dirname.replace('routes', '') + 'uploads/' + answer.file);
+                                  }
                                 } else {
-                                    res.status(400);
-                                    res.setHeader('Content-Type', 'application/json');
-                                    res.send({ ok: false, reason: 'Invalid Answer or Exam Id' });
+                                    res.status(404);
+                                    res.json({ ok: false, reason: 'Invalid Answer or Exam Id' });
                                 }
                             });
                         }
@@ -126,14 +130,20 @@ function upload(response, files, resp) {
     audioPath = _upload(response, files.audio);
 
     if (files.uploadOnlyAudio) {
-        var newAnswer = new Answer({ file: audioPath, number: resp.onNumber, s3: useS3 });
-        newAnswer.save();
-        console.log(newAnswer._id);
-        resp.answers.push(newAnswer._id);
-        resp.save();
-        response.status(200);
-        response.setHeader('Content-Type', 'application/json');
-        response.send(newQuestion._id);
+      var newAnswer = new Answer({ file: audioPath, number: resp.onNumber, s3: useS3 });
+      newAnswer.save();
+      console.log(newAnswer._id);
+      resp.answers.push(newAnswer._id);
+      resp.save();
+      // The file is already on the disk, but if you want to use S3, then upload and release from disk
+      if(useS3) {
+        uploadFileToS3(newAnswer.file, __dirname.replace('routes', '') + 'uploads/' + newAnswer.file, function() {
+          fs.unlink(__dirname.replace('routes', '') + 'uploads/' + newAnswer.file);
+          response.json({ answer_id: newAnswer._id });
+        });
+      } else {
+        response.json({ answer_id: newAnswer._id });
+      }
     }
 
     if (!files.uploadOnlyAudio) {
@@ -238,24 +248,32 @@ function ifMac(response, files, audioPath, videoPath, resp) {
         if (stderr) console.log(stderr);
 
         if (error) {
-            console.log('exec error: ' + error);
-            response.status(500);
-            response.send();
+          console.log('exec error: ' + error);
+          response.status(500);
+          response.send();
         } else {
-            var newAnswer = new Answer({ file: files.audio.name.split('.')[0] + '-merged.webm', number: resp.onNumber, s3: useS3 });
-            newAnswer.save();
-            console.log(newAnswer._id);
-            resp.answers.push(newAnswer._id);
-            resp.save();
-            response.json({ resp_id: response._id, answer_id: newAnswer._id });
-            // removing audio/video files
-            fs.unlink(audioFile);
-            fs.unlink(videoFile);
+          var newAnswer = new Answer({ file: files.audio.name.split('.')[0] + '-merged.webm', number: resp.onNumber, s3: useS3 });
+          newAnswer.save();
+          console.log(newAnswer._id);
+          resp.answers.push(newAnswer._id);
+          resp.save();
+          // The file is already on the disk, but if you want to use S3, then upload and release from disk
+          if(useS3) {
+            uploadFileToS3(newAnswer.file, __dirname.replace('routes', '') + 'uploads/' + newAnswer.file, function() {
+              fs.unlink(__dirname.replace('routes', '') + 'uploads/' + newAnswer.file);
+              response.json({ answer_id: newAnswer._id });
+            });
+          } else {
+            response.json({ answer_id: newAnswer._id });
+          }
+          // removing audio/video files
+          fs.unlink(audioFile);
+          fs.unlink(videoFile);
         }
     });
 }
 
-function uploadFile(remoteFilename, fileName) {
+function uploadFileToS3(remoteFilename, fileName, callback) {
   var fileBuffer = fs.readFileSync(fileName);
   var metaData = getContentTypeByFile(fileName);
 
@@ -268,6 +286,7 @@ function uploadFile(remoteFilename, fileName) {
   }, function(error, response) {
     console.log('uploaded file[' + fileName + '] to [' + remoteFilename + '] as [' + metaData + ']');
     console.log(arguments);
+    callback(error, response);
   });
 }
 
@@ -276,12 +295,10 @@ function getContentTypeByFile(fileName) {
   var rc = 'application/octet-stream';
   var fileNameLowerCase = fileName.toLowerCase();
 
-  if (fileNameLowerCase.indexOf('.html') >= 0) rc = 'text/html';
-  else if (fileNameLowerCase.indexOf('.css') >= 0) rc = 'text/css';
-  else if (fileNameLowerCase.indexOf('.json') >= 0) rc = 'application/json';
-  else if (fileNameLowerCase.indexOf('.js') >= 0) rc = 'application/x-javascript';
-  else if (fileNameLowerCase.indexOf('.png') >= 0) rc = 'image/png';
-  else if (fileNameLowerCase.indexOf('.jpg') >= 0) rc = 'image/jpg';
+  if (fileNameLowerCase.indexOf('.wav') >= 0) rc = 'audio/wav';
+  else if (fileNameLowerCase.indexOf('.ogg') >= 0) rc = 'audio/ogg';
+  else if (fileNameLowerCase.indexOf('.webm') >= 0) rc = 'video/webm';
+  else if (fileNameLowerCase.indexOf('.mp4') >= 0) rc = 'video/mp4';
 
   return rc;
 }

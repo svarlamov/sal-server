@@ -1,5 +1,10 @@
 var express = require('express');
 var fs = require('fs');
+var config = require('../config');
+var useS3 = config.s3_enabled;
+if(useS3) {
+  var BUCKET_NAME = config.s3.bucket;
+}
 var router = express.Router({mergeParams : true});
 var Exam = require('../models/exam');
 var Response = require('../models/response');
@@ -103,7 +108,12 @@ router.get('/:resp_id/currentQuestion', function(req, res, next) {
                                     console.error(err);
                                     res.send(err);
                                 } else if(question) {
-                                    res.sendFile(__dirname.replace('routes', '') + 'uploads/' + question.file);
+                                    if(question.s3){
+                                      // TODO: redir to aws signed url for file
+                                      res.redirect('https://' + BUCKET_NAME + '.s3.amazonaws.com/' + question.file);
+                                    } else {
+                                      res.sendFile(__dirname.replace('routes', '') + 'uploads/' + question.file);
+                                    }
                                 } else {
                                     res.send(JSON.stringify({ done: true }));
                                 }

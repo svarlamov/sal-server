@@ -47,11 +47,15 @@ router.get('/:question_id/file', function(req, res, next) {
             console.error(err);
             res.send(err);
         } else if(question) {
+          if(question.s3){
+            // TODO: redir to aws signed url for file
+            res.redirect('https://' + BUCKET_NAME + '.s3.amazonaws.com/' + question.file);
+          } else {
             res.sendFile(__dirname.replace('routes', '') + 'uploads/' + question.file);
+          }
         } else {
-            res.status(400);
-            res.setHeader('Content-Type', 'application/json');
-            res.send({ ok: false, reason: 'Invalid Question or Exam Id' });
+            res.status(404);
+            res.json({ ok: false, reason: 'Invalid Question or Exam Id' });
         }
     });
 });
@@ -66,8 +70,7 @@ router.delete('/:question_id', function(req, res, next) {
             res.send(err);
         } else {
             question.remove();
-            res.setHeader('Content-Type', 'application/json');
-            res.send({ success: true });
+            res.json({ success: true });
         }
     });
 });
@@ -80,11 +83,19 @@ function upload(response, files, examId) {
     audioPath = _upload(response, files.audio);
 
     if (files.uploadOnlyAudio) {
-        var newQuestion = new Question({ file: audioPath, s3: useS3 });
-        newQuestion.save();
-        console.log(newQuestion._id);
-        newQuestion.pushAndNumber(newQuestion, examId);
+      var newQuestion = new Question({ file: audioPath, s3: useS3 });
+      newQuestion.save();
+      console.log(newQuestion._id);
+      newQuestion.pushAndNumber(newQuestion, examId);
+      // The file is already on the disk, but if you want to use S3, then upload and release from disk
+      if(useS3) {
+        uploadFileToS3(newQuestion.file, __dirname.replace('routes', '') + 'uploads/' + newQuestion.file, function() {
+          fs.unlink(__dirname.replace('routes', '') + 'uploads/' + newQuestion.file);
+          response.json({ exam_id: examId, question_id: newQuestion._id });
+        });
+      } else {
         response.json({ exam_id: examId, question_id: newQuestion._id });
+      }
     }
 
     if (!files.uploadOnlyAudio) {
@@ -197,7 +208,15 @@ function ifMac(response, files, audioPath, videoPath, examId) {
             newQuestion.save();
             console.log(newQuestion._id);
             newQuestion.pushAndNumber(newQuestion, examId);
-            response.json({ exam_id: examId, question_id: newQuestion._id });
+            // The file is already on the disk, but if you want to use S3, then upload and release from disk
+            if(useS3) {
+              uploadFileToS3(newQuestion.file, __dirname.replace('routes', '') + 'uploads/' + newQuestion.file, function() {
+                fs.unlink(__dirname.replace('routes', '') + 'uploads/' + newQuestion.file);
+                response.json({ exam_id: examId, question_id: newQuestion._id });
+              });
+            } else {
+              response.json({ exam_id: examId, question_id: newQuestion._id });
+            }
             // removing audio/video files
             fs.unlink(audioFile);
             fs.unlink(videoFile);
@@ -206,7 +225,7 @@ function ifMac(response, files, audioPath, videoPath, examId) {
     });
 }
 
-function uploadFileToS3(remoteFilename, fileName) {
+function uploadFileToS3(remoteFilename, fileName, callback) {
   var fileBuffer = fs.readFileSync(fileName);
   var metaData = getContentTypeByFile(fileName);
 
@@ -219,6 +238,7 @@ function uploadFileToS3(remoteFilename, fileName) {
   }, function(error, response) {
     console.log('uploaded file[' + fileName + '] to [' + remoteFilename + '] as [' + metaData + ']');
     console.log(arguments);
+    callback(error, response);
   });
 }
 
@@ -226,15 +246,12 @@ function uploadFileToS3(remoteFilename, fileName) {
 function getContentTypeByFile(fileName) {
   var rc = 'application/octet-stream';
   var fileNameLowerCase = fileName.toLowerCase();
-  /*
-   * TODO: Handle ContentType
-  if (fileNameLowerCase.indexOf('.html') >= 0) rc = 'text/html';
-  else if (fileNameLowerCase.indexOf('.css') >= 0) rc = 'text/css';
-  else if (fileNameLowerCase.indexOf('.json') >= 0) rc = 'application/json';
-  else if (fileNameLowerCase.indexOf('.js') >= 0) rc = 'application/x-javascript';
-  else if (fileNameLowerCase.indexOf('.png') >= 0) rc = 'image/png';
-  else if (fileNameLowerCase.indexOf('.jpg') >= 0) rc = 'image/jpg';
-  */
+
+  if (fileNameLowerCase.indexOf('.wav') >= 0) rc = 'audio/wav';
+  else if (fileNameLowerCase.indexOf('.ogg') >= 0) rc = 'audio/ogg';
+  else if (fileNameLowerCase.indexOf('.webm') >= 0) rc = 'video/webm';
+  else if (fileNameLowerCase.indexOf('.mp4') >= 0) rc = 'video/mp4';
+
   return rc;
 }
 
