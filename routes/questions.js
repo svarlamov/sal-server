@@ -3,7 +3,6 @@ var config = require('../config');
 var useS3 = config.s3_enabled;
 if(useS3) {
   var AWS = require('aws-sdk');
-  console.log(config.s3.key + " " + config.s3.secret);
   AWS.config = new AWS.Config();
   AWS.config.accessKeyId = config.s3.key;
   AWS.config.secretAccessKey = config.s3.secret;
