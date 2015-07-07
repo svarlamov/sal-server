@@ -242,7 +242,6 @@ function uploadFileToS3(remoteFilename, fileName, callback) {
   });
 }
 
-
 function getContentTypeByFile(fileName) {
   var rc = 'application/octet-stream';
   var fileNameLowerCase = fileName.toLowerCase();
