@@ -15,8 +15,12 @@ results
 
 node_modules
 bower_components
-uploads
 npm-debug.log
+
+*.wav
+*.ogg
+*.webm
+*.mp4
 
 .DS_Store
 
