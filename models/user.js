@@ -35,3 +35,4 @@ userSchema.methods.isLoggedIn = function checkLoggedIn(){
 var User = mongoose.model('User', userSchema);
 
 module.exports = User;
+
